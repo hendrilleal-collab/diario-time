@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Painel da Equipe</title>
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="apple-mobile-web-app-title" content="Painel">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --preto:#231F20; --vermelho:#D03025; --vermelho-cl:#F0776B; --rosa:#FBECEB; --vinho:#3B2120;
+  --cinza:#F6F6F7; --branco:#FFFFFF; --linha:#E6E2E2; --txt2:#6B6567; --txt3:#9A9395;
+  --ok:#1F8A4C; --ambar:#B86E00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400;color:var(--preto);
+  background:var(--cinza);font-size:14px;min-height:100vh;padding-bottom:48px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+button{font-family:inherit}
+.oculto{display:none!important}
+
+/* TOPO */
+.topo{background:var(--preto);color:#fff}
+.topo .wrap{padding-top:30px;padding-bottom:26px;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.etq{display:flex;align-items:center;gap:12px;font-size:11px;font-weight:400;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.etq::before{content:"";width:30px;height:3px;background:var(--vermelho);flex-shrink:0}
+h1{font-size:40px;font-weight:700;line-height:1.05;margin-top:12px;letter-spacing:-.5px}
+.lema{font-size:13px;font-weight:300;color:rgba(255,255,255,.7);margin-top:6px}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.estado{font-size:11px;color:rgba(255,255,255,.5);margin-right:4px}
+.btn{font-weight:600;font-size:12px;border-radius:8px;padding:9px 15px;cursor:pointer;white-space:nowrap;
+  border:1px solid rgba(255,255,255,.22);background:transparent;color:#fff}
+.btn:hover{border-color:var(--vermelho-cl)}
+.btn.forte{background:var(--vermelho);border-color:var(--vermelho)}
+.btn.forte:hover{background:#B5281F}
+
+/* ABAS PRINCIPAIS */
+.nav{background:var(--preto);border-top:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:20}
+.nav .wrap{display:flex;gap:4px;overflow-x:auto}
+.nav button{background:none;border:none;color:rgba(255,255,255,.6);font-size:13px;font-weight:500;padding:14px 16px 12px;
+  border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.nav button:hover{color:#fff}
+.nav button.on{color:#fff;font-weight:600;border-bottom-color:var(--vermelho)}
+.pag{display:none;padding-top:26px}
+.pag.on{display:block}
+
+/* ABAS DE MES */
+.meses{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.aba{font-size:13px;font-weight:500;padding:8px 14px;border-radius:8px;border:1px solid var(--linha);background:#fff;color:var(--txt2);
+  cursor:pointer;display:flex;align-items:center;gap:8px}
+.aba:hover{border-color:var(--vermelho);color:var(--preto)}
+.aba.on{background:var(--preto);border-color:var(--preto);color:#fff;font-weight:600}
+.aba .pt{width:6px;height:6px;border-radius:50%;background:var(--vermelho)}
+.aba .x{border:none;background:none;color:inherit;opacity:.5;font-size:16px;cursor:pointer;line-height:1;padding:0 0 0 2px}
+.aba .x:hover{opacity:1}
+.aba-add{font-size:12px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px dashed #CFC9C9;background:transparent;color:var(--txt2);cursor:pointer}
+.aba-add:hover{border-color:var(--vermelho);color:var(--vermelho)}
+
+/* TITULOS */
+.titulo{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;margin:34px 0 14px}
+.titulo::before{content:"";width:26px;height:3px;background:var(--vermelho);flex-shrink:0}
+.titulo span{font-weight:300;letter-spacing:.1em;color:var(--txt2)}
+.titulo:first-child{margin-top:0}
+.sub{font-size:13px;font-weight:300;color:var(--txt2);margin:-6px 0 14px;line-height:1.6}
+
+/* CARDS */
+.grade{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{background:#fff;border:1px solid var(--linha);border-radius:12px;padding:16px 18px}
+.card .rot{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--txt3);margin-bottom:6px}
+.card .val{font-size:24px;font-weight:700;line-height:1.15;letter-spacing:-.3px}
+.card .pe{font-size:11.5px;font-weight:400;color:var(--txt2);margin-top:4px}
+.card.top{border-top:4px solid var(--vermelho)}
+.card.escuro{background:var(--preto);border-color:var(--preto);color:#fff}
+.card.escuro .rot{color:rgba(255,255,255,.55)}
+.card.escuro .pe{color:rgba(255,255,255,.65)}
+
+/* TABELAS */
+.tab-wrap{background:#fff;border:1px solid var(--linha);border-radius:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--preto);text-align:left;
+  padding:14px 12px 10px;border-bottom:2px solid var(--preto);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EFEBEB;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tr.gestor td{background:var(--rosa)}
+tr.total td{border-top:2px solid var(--preto);font-weight:700;white-space:nowrap}
+tr.divisor td{padding:0;height:6px;border:none;background:var(--cinza)}
+.nome-cel{font-weight:600;font-size:14.5px;white-space:nowrap}
+.tag{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:3px 7px;border-radius:4px;margin-left:8px;vertical-align:middle;white-space:nowrap}
+.tag.g{background:var(--vermelho);color:#fff}
+.tag.p{background:var(--preto);color:#fff}
+.tag.a{border:1px solid var(--preto);color:var(--preto)}
+.tag.v{border:1px solid var(--linha);color:var(--txt2)}
+input.inp,select.inp{font-family:inherit;font-weight:500;font-size:13.5px;color:var(--preto);background:var(--cinza);
+  border:1px solid transparent;border-radius:7px;padding:8px 10px;width:100%;min-width:90px}
+input.inp:hover,select.inp:hover{border-color:var(--linha)}
+input.inp:focus,select.inp:focus{outline:none;border-color:var(--vermelho);background:#fff}
+input.inp::placeholder{color:#BDB6B7}
+input.din{font-weight:600}
+input.vend{color:var(--vermelho);font-weight:700}
+input.curto{min-width:58px;width:66px;text-align:center}
+.barra{width:100%;min-width:80px;height:7px;background:var(--rosa);border-radius:4px;overflow:hidden}
+.barra i{display:block;height:100%;border-radius:4px;transition:width .25s}
+.pc{font-weight:700;white-space:nowrap}
+.fal{font-size:12.5px;color:var(--txt2);white-space:nowrap}
+.fal.ok{color:var(--ok);font-weight:600}
+.sep{border-left:1px solid var(--linha)}
+.mini-rot{font-size:10.5px;color:var(--txt3);display:block;margin-top:3px;white-space:nowrap}
+.lixo{border:none;background:none;color:var(--txt3);font-size:19px;cursor:pointer;line-height:1;padding:2px 6px}
+.lixo:hover{color:var(--vermelho)}
+.add-linha{width:100%;font-weight:600;font-size:12px;color:var(--txt2);background:none;border:1px dashed #CFC9C9;border-radius:8px;padding:10px;cursor:pointer}
+.add-linha:hover{border-color:var(--vermelho);color:var(--vermelho)}
+.legenda{font-size:11.5px;font-weight:300;color:var(--txt2);margin:10px 2px 0;line-height:1.6}
+.legenda b{font-weight:600;color:var(--preto)}
+.nota-ano{font-size:10.5px;color:var(--txt3);margin-top:4px;white-space:nowrap}
+
+/* AVISO */
+.aviso{background:var(--rosa);border-left:4px solid var(--vermelho);border-radius:10px;padding:14px 18px;margin-bottom:20px;
+  font-size:13px;line-height:1.6;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.aviso b{font-weight:600}
+
+/* BOTOES PEQUENOS / CHIPS */
+.mini{font-weight:600;font-size:11.5px;padding:7px 12px;border-radius:7px;border:1px solid var(--linha);background:#fff;color:var(--preto);cursor:pointer;white-space:nowrap}
+.mini:hover{border-color:var(--vermelho);color:var(--vermelho)}
+.mini.forte{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+.mini.forte:hover{background:#B5281F;color:#fff}
+.mini.escuro{background:var(--preto);border-color:var(--preto);color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.chip{font-weight:500;font-size:12px;padding:7px 14px;border-radius:20px;border:1px solid var(--linha);background:#fff;color:var(--txt2);cursor:pointer}
+.chip.on{background:var(--preto);border-color:var(--preto);color:#fff}
+
+/* CAIXA ESCURA */
+.callout{background:var(--preto);color:#fff;border-radius:14px;padding:20px 22px}
+.callout .etq{color:rgba(255,255,255,.8)}
+.regras{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.regra{background:var(--vinho);border-radius:10px;padding:13px 14px;border-top:3px solid var(--vermelho)}
+.regra b{display:block;font-size:12.5px;font-weight:600;margin-bottom:3px}
+.regra span{font-size:12px;font-weight:300;color:rgba(255,255,255,.78);line-height:1.5}
+
+/* PLANEJAMENTO */
+.bloco{background:#fff;border:1px solid var(--linha);border-radius:12px;padding:18px 20px}
+.dois{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lista-ed{display:flex;flex-direction:column;gap:8px}
+.lin{display:flex;gap:8px;align-items:center}
+.lin .n{font-weight:700;color:var(--vermelho);width:22px;flex-shrink:0;text-align:center}
+.lin input[type=text]{flex:1}
+.lin input[type=checkbox]{width:18px;height:18px;accent-color:var(--vermelho);flex-shrink:0;cursor:pointer}
+.lin.feito input[type=text]{color:var(--txt3);text-decoration:line-through}
+.st{font-size:11px;font-weight:600;padding:4px 9px;border-radius:20px;white-space:nowrap}
+.st.ok{background:rgba(31,138,76,.12);color:var(--ok)}
+.st.no{background:var(--rosa);color:var(--vermelho)}
+.st.ne{background:var(--cinza);color:var(--txt2)}
+.vazio{text-align:center;font-size:13px;font-weight:300;color:var(--txt2);padding:30px 16px;background:#fff;border:1px dashed #CFC9C9;border-radius:12px}
+
+/* X1 */
+.agenda{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:18px}
+.ag{background:#fff;border:1px solid var(--linha);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ag.atrasado{border-color:var(--vermelho);background:var(--rosa)}
+.ag-nome{font-weight:600;font-size:14px}
+.ag-sit{font-size:11.5px;color:var(--txt2);margin-top:1px}
+.ag.atrasado .ag-sit{color:var(--vermelho);font-weight:600}
+.ag.ok .ag-sit{color:var(--ok);font-weight:600}
+.x1-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:14px}
+.x1c{background:#fff;border:1px solid var(--linha);border-top:4px solid var(--vermelho);border-radius:12px;padding:16px 18px 18px}
+.x1-cab{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ini{width:38px;height:38px;border-radius:50%;background:var(--preto);color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.x1-cab .esp{flex:1}
+.x1-sel{font-family:inherit;font-weight:600;font-size:14px;border:1px solid var(--linha);border-radius:7px;padding:6px 8px;background:#fff;color:var(--preto);max-width:170px}
+.x1-data{font-family:inherit;font-size:12.5px;border:1px solid var(--linha);border-radius:7px;padding:6px 8px;background:#fff;color:var(--preto)}
+.campo{margin-top:13px}
+.lab{display:block;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--preto);margin-bottom:6px}
+.lab small{font-size:11px;font-weight:300;letter-spacing:0;text-transform:none;color:var(--txt2);margin-left:6px}
+textarea.ta{width:100%;font-family:inherit;font-weight:400;font-size:13px;color:var(--preto);border:1px solid var(--linha);background:var(--cinza);
+  border-radius:8px;padding:9px 10px;resize:vertical;min-height:46px;line-height:1.5}
+textarea.ta:focus{outline:none;border-color:var(--vermelho);background:#fff}
+textarea.ta::placeholder{color:#B5AEAF}
+.lembra{font-size:12.5px;background:var(--rosa);border-left:3px solid var(--vermelho);padding:9px 11px;border-radius:6px;line-height:1.5;margin-top:13px}
+.lembra b{display:block;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--vermelho);margin-bottom:4px}
+.lembra label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;margin-top:4px}
+.lembra input{accent-color:var(--vermelho);margin-top:3px}
+.lembra.pauta{background:#FFF4E0;border-left-color:var(--ambar)}
+.lembra.pauta b{color:var(--ambar)}
+.lembra.pauta input{accent-color:var(--ambar)}
+.lembra.pauta .ir{border:none;background:none;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--ambar);cursor:pointer;padding:0;margin-top:6px;text-decoration:underline}
+.pa-lin{display:flex;gap:8px;align-items:flex-start}
+.pa-lin input[type=checkbox]{width:18px;height:18px;accent-color:var(--vermelho);flex-shrink:0;cursor:pointer;margin-top:11px}
+.pa-lin textarea{flex:1}
+.pa-lin .lixo{margin-top:6px}
+.pa-feito{display:flex;gap:8px;align-items:flex-start}
+.pa-feito input{accent-color:var(--vermelho);margin-top:4px;flex-shrink:0;cursor:pointer}
+.pa-feito .t{flex:1;color:var(--txt3);text-decoration:line-through;white-space:pre-wrap}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}
+.nums div{background:var(--cinza);border-radius:8px;padding:8px 10px}
+.nums small{display:block;font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3)}
+.nums b{font-size:15px;font-weight:700}
+.leitura{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12.5px}
+.leitura .dica{color:var(--txt2);font-weight:300}
+.nivel{font-size:12.5px;font-weight:300;line-height:1.5;margin-top:12px;padding:9px 11px;border-radius:8px;background:var(--preto);color:#fff}
+.nivel b{font-weight:600;color:var(--vermelho-cl)}
+.auto6{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.x1-pe{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--linha)}
+.x1-pe .info{font-size:11.5px;color:var(--txt2)}
+.hist{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.hist div{font-size:12.5px;background:#fff;border:1px solid var(--linha);border-radius:8px;padding:9px 12px;line-height:1.5}
+.hist b{font-weight:600}
+
+/* DIARIO DO TIME */
+.nav-bolha{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--vermelho);color:#fff;font-size:10.5px;font-weight:700;margin-left:4px}
+.dbarra{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--linha);border-radius:12px;padding:12px 16px;margin-bottom:6px}
+.dbarra b{display:block;font-weight:600;font-size:13.5px}
+.dbarra span{font-size:12px;color:var(--txt2)}
+.dalertas{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.dal{background:#fff;border:1px solid var(--linha);border-top:4px solid var(--linha);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.dal.x1{border-top-color:var(--vermelho)}
+.dal.olho{border-top-color:var(--ambar)}
+.dal.ok,.dal.feito{border-top-color:var(--ok)}
+.dal-cab{display:flex;gap:10px;align-items:center}
+.dal-mot{list-style:none;display:flex;flex-direction:column;gap:5px;font-size:12.5px;line-height:1.45}
+.dal-mot li{padding-left:16px;position:relative;color:var(--txt2)}
+.dal-mot li::before{content:"";position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--ambar)}
+.dal-mot li.forte{color:var(--preto);font-weight:500}
+.dal-mot li.forte::before{background:var(--vermelho)}
+.dal-ok{font-size:12.5px;color:var(--txt2)}
+.dal-ac{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.dmult{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.dgraf{position:relative}
+.dgraf svg{display:block;width:100%;height:auto;overflow:visible}
+.dgraf .eixo{font-size:10px;fill:var(--txt3);font-family:inherit}
+.dgraf .rot{font-size:11px;fill:var(--preto);font-weight:600;font-family:inherit}
+.dgraf .rot2{font-size:11.5px;fill:var(--txt2);font-family:inherit}
+.dtip{position:absolute;pointer-events:none;background:var(--preto);color:#fff;font-size:12px;line-height:1.4;padding:7px 10px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-100%);margin-top:-8px;opacity:0;transition:opacity .12s;z-index:5}
+.dtip.on{opacity:1}
+.dtip b{font-weight:600}
+.dleg{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--txt2);margin-top:10px}
+.dleg span{display:flex;align-items:center;gap:6px}
+.dleg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.dleg b{color:var(--preto);font-weight:600}
+.dnw td{white-space:nowrap}
+.ddiag{background:#fff;border:1px solid var(--linha);border-top:4px solid var(--preto);border-radius:12px;padding:14px 18px;margin-bottom:14px}
+.ddiag-cab b{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.ddiag-cab span{font-size:12px;color:var(--txt2)}
+.ddiag-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 18px;margin-top:8px}
+.ddg{display:flex;gap:10px;padding:8px 0}
+.ddg > span{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;margin-top:1px}
+.ddg.g2 > span{background:var(--vermelho)}
+.ddg.g1 > span{background:var(--ambar)}
+.ddg b{display:block;font-size:13.5px;font-weight:600}
+.ddg p{font-size:12.5px;color:var(--txt2);line-height:1.5;margin-top:2px}
+.ddiag-ok{font-size:12.5px;margin-top:8px;padding-top:8px;border-top:1px solid var(--grade,#EFEBEB);color:var(--txt2)}
+.ddiag-ok b{color:var(--ok);font-weight:600}
+.dusar{color:var(--vermelho);font-weight:600;cursor:pointer;text-decoration:underline}
+.lembra.dapp{background:#fff;border:1px solid var(--linha);border-left:3px solid var(--preto)}
+.lembra.dapp > b{color:var(--preto)}
+.lembra.dapp .nums{grid-template-columns:repeat(4,1fr);margin-top:6px}
+.lembra.dapp .nums b{display:inline;font-size:15px;letter-spacing:0;text-transform:none;color:var(--preto);margin:0;font-weight:700}
+.lembra.dapp .nums small{letter-spacing:.08em}
+.lembra.dapp .ir{border:none;background:none;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--vermelho);cursor:pointer;padding:0;margin-top:8px;text-decoration:underline}
+
+/* CONFIG */
+.cfg{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end}
+.cfg label{display:block;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.cfg input[type=number]{font-family:inherit;font-weight:700;font-size:17px;width:80px;padding:6px 8px;text-align:center;border:1px solid var(--linha);border-radius:7px;background:var(--cinza)}
+.cfg input:focus{outline:none;border-color:var(--vermelho)}
+.cfg .nota{font-size:12px;font-weight:300;color:var(--txt2);max-width:520px;line-height:1.6}
+.cfg .nota b{font-weight:600;color:var(--preto)}
+.foto-prev{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--vermelho)}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(35,31,32,.6);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal-box{background:#fff;border-radius:14px;max-width:620px;width:100%;padding:20px;max-height:90vh;display:flex;flex-direction:column;gap:12px}
+.modal-box h3{font-size:16px;font-weight:700}
+.modal-box textarea{flex:1;min-height:300px;width:100%;font-family:inherit;font-size:13px;border:1px solid var(--linha);border-radius:8px;padding:10px;background:var(--cinza);resize:vertical}
+.modal-box .acoes{justify-content:flex-end}
+
+/* RODAPE */
+.rodape{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:48px;padding-top:16px;border-top:1px solid #D9D3D3;font-size:11.5px;color:var(--txt2)}
+
+@media (max-width:980px){
+  .grade{grid-template-columns:repeat(2,1fr)}
+  .regras{grid-template-columns:1fr 1fr}
+  .dois{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  h1{font-size:30px}
+  .x1-grade{grid-template-columns:1fr}
+  .auto6{grid-template-columns:1fr}
+  .nums,.lembra.dapp .nums{grid-template-columns:1fr 1fr}
+  .regras{grid-template-columns:1fr}
+  .card .val{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="topo">
+  <div class="wrap">
+    <div>
+      <div class="etq">Gestão · Equipe Ademicon Pelotas</div>
+      <h1>Painel da Equipe</h1>
+      <div class="lema">Meta não se cobra no fim do mês. Se acompanha durante.</div>
+    </div>
+    <div class="acoes">
+      <span class="estado" id="estado">carregando…</span>
+      <button class="btn" onclick="baixarBackup()">Baixar backup</button>
+      <button class="btn" onclick="$('arq').click()">Restaurar</button>
+      <button class="btn forte" onclick="gerarImagem()">Imagem pro grupo</button>
+      <input type="file" id="arq" accept="application/json,.json" class="oculto" onchange="restaurarBackup(this)">
+    </div>
+  </div>
+</div>
+<div class="nav"><div class="wrap" id="nav">
+  <button data-p="metas" onclick="irPara('metas')">Metas</button>
+  <button data-p="plan" onclick="irPara('plan')">Planejamento do mês</button>
+  <button data-p="x1" onclick="irPara('x1')">X1</button>
+  <button data-p="diario" onclick="irPara('diario')">Diário do time</button>
+  <button data-p="equipe" onclick="irPara('equipe')">Equipe</button>
+</div></div>
+
+<div class="wrap">
+  <div id="avisoTopo" style="margin-top:22px"></div>
+
+  <!-- ================= METAS ================= -->
+  <section class="pag" id="pag-metas">
+    <div class="meses" id="meses"></div>
+
+    <div class="titulo">Time · <span id="mesAtual">–</span></div>
+    <div class="grade">
+      <div class="card top"><div class="rot">Meta do mês</div><div class="val" id="c-meta">–</div></div>
+      <div class="card top"><div class="rot">Vendido</div><div class="val" style="color:var(--vermelho)" id="c-vend">–</div></div>
+      <div class="card top"><div class="rot">% da meta</div><div class="val" id="c-pct">–</div><div class="pe" id="c-falta">–</div></div>
+      <div class="card top"><div class="rot">Comissão do time (2%)</div><div class="val" style="color:var(--ok)" id="c-com">–</div></div>
+      <div class="card escuro"><div class="rot">Projeção de fechamento</div><div class="val" id="c-proj">–</div><div class="pe" id="c-proj-pe">no ritmo atual</div></div>
+      <div class="card escuro"><div class="rot">Ritmo necessário</div><div class="val" id="c-ritmo">–</div><div class="pe" id="c-ritmo-pe">por dia útil</div></div>
+      <div class="card"><div class="rot">Reuniões no mês</div><div class="val" id="c-reun">0</div><div class="pe" id="c-reun-pe">–</div></div>
+      <div class="card"><div class="rot">Reuniões no período</div><div class="val" id="c-reun-per">0</div><div class="pe" id="c-reun-per-pe">–</div></div>
+    </div>
+
+    <div class="titulo">Meta x realizado · por consultor</div>
+    <div class="tab-wrap">
+      <table style="min-width:980px">
+        <thead><tr>
+          <th>Consultor</th><th>Meta do mês</th><th>Vendido</th><th>Progresso</th><th>Falta</th><th>Projeção</th><th>Comissão</th>
+          <th class="sep">Reuniões no mês</th><th>No período</th>
+        </tr></thead>
+        <tbody id="corpoMes"></tbody>
+      </table>
+    </div>
+    <div class="legenda">Valores: <b>700</b> vira 700 mil · <b>1,27</b> vira 1,27 milhão · <b>476044</b> entra cheio. Meta do mês mexe na meta do ano, venda do mês soma no ano. Embaixo do vendido e das reuniões aparece o que o consultor lançou no app. Clica em <b>usar</b> pra puxar, nada muda sozinho.</div>
+
+    <div class="titulo">Acumulado no ano · <span id="anoRefTxt">–</span></div>
+    <div class="tab-wrap">
+      <table style="min-width:1040px">
+        <thead><tr>
+          <th>Consultor</th><th>Meta anual</th><th id="thBase">Vendido antes do painel</th><th>Vendido no painel</th><th>Total no ano</th>
+          <th>Progresso</th><th>Falta</th><th>Por mês restante</th><th>Comissão no ano</th>
+        </tr></thead>
+        <tbody id="corpoAno"></tbody>
+      </table>
+    </div>
+    <div class="legenda">Meta anual = meta de antes do painel + soma das metas de cada mês. Mudou a meta anual, a diferença se divide igual entre os meses que ainda não fecharam. Mês fechado não muda.</div>
+  </section>
+
+  <!-- ================= PLANEJAMENTO ================= -->
+  <section class="pag" id="pag-plan">
+    <div class="callout">
+      <div class="etq">Ritual de gestão · 1x por mês · toda a equipe junta</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:10px">
+        <div style="font-size:26px;font-weight:700;line-height:1.15">Planejamento de <span id="planMes">–</span></div>
+        <div class="acoes">
+          <select class="inp" id="planSel" style="width:auto;background:#fff" onchange="S.ativo=+this.value;salvar();tudo()"></select>
+          <button class="mini forte" onclick="textoGrupo()">Texto pro grupo</button>
+        </div>
+      </div>
+      <div style="font-size:12.5px;font-weight:300;color:rgba(255,255,255,.72);margin-top:8px">Pauta: mês que passou meta x realizado · metas quebradas por semana · prioridades máximas · bloqueios. Tudo registrado no grupo. Quem não entregou explica no privado.</div>
+    </div>
+
+    <div class="titulo">01 · Mês que passou · <span id="planAnt">–</span></div>
+    <div id="planRev"></div>
+
+    <div class="titulo">02 · Metas do mês quebradas por semana</div>
+    <div class="sub">A meta da semana é proporcional aos dias úteis de cada semana. Ajusta a meta do mês aqui mesmo se precisar.</div>
+    <div class="tab-wrap"><table style="min-width:860px"><thead id="cabSem"></thead><tbody id="corpoSem"></tbody></table></div>
+
+    <div class="dois" style="margin-top:34px">
+      <div>
+        <div class="titulo" style="margin-top:0">03 · Prioridades máximas</div>
+        <div class="bloco"><div class="lista-ed" id="prior"></div>
+          <button class="add-linha" style="margin-top:10px" onclick="addPrior()">+ prioridade</button>
+          <div class="legenda" style="margin-top:8px">Poucas e claras. Até 3 é o ideal.</div></div>
+      </div>
+      <div>
+        <div class="titulo" style="margin-top:0">04 · Bloqueios</div>
+        <div class="bloco"><div class="lista-ed" id="bloq"></div>
+          <button class="add-linha" style="margin-top:10px" onclick="addBloq()">+ bloqueio</button>
+          <div class="legenda" style="margin-top:8px">O que pode travar e quem resolve. Marca quando resolver.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= X1 ================= -->
+  <section class="pag" id="pag-x1">
+    <div class="callout">
+      <div class="etq">Como conduzir</div>
+      <div class="regras">
+        <div class="regra"><b>Correção no privado</b><span>Sempre. No grupo vai só o registro do time.</span></div>
+        <div class="regra"><b>Pessoa antes do número</b><span>Pergunta de aproximação em todo X1, sem exceção.</span></div>
+        <div class="regra"><b>Prévia e Autorizado</b><span>Fica mais perto. Autonomia cedo demais é o erro mais comum.</span></div>
+        <div class="regra"><b>Pleno</b><span>Tu entrega o que precisa ser feito. O como é com ele.</span></div>
+      </div>
+    </div>
+
+    <div class="chips" style="margin-top:22px">
+      <button class="chip" id="x1t-sem" onclick="x1Tab('sem')">X1 semanal · 15 min</button>
+      <button class="chip" id="x1t-mes" onclick="x1Tab('mes')">X1 do mês · início do mês</button>
+      <button class="chip" id="x1t-pauta" onclick="x1Tab('pauta')">Minhas anotações · o que eu vou falar</button>
+    </div>
+    <div class="sub" id="x1Sub"></div>
+    <div class="agenda" id="agenda"></div>
+    <div class="chips" id="x1Filtro"></div>
+    <div class="x1-grade" id="x1grade"></div>
+  </section>
+
+  <!-- ================= DIARIO DO TIME ================= -->
+  <section class="pag" id="pag-diario"></section>
+
+  <!-- ================= EQUIPE ================= -->
+  <section class="pag" id="pag-equipe">
+    <div class="titulo">Ficha do consultor</div>
+    <div class="chips" id="fichaChips"></div>
+    <div class="tab-wrap"><table style="min-width:760px">
+      <thead><tr><th>Mês</th><th>Meta</th><th>Vendido</th><th>%</th><th>Comissão</th><th class="sep">Reuniões</th><th>X1 semanais</th><th>X1 do mês</th></tr></thead>
+      <tbody id="corpoFicha"></tbody></table></div>
+    <div class="hist" id="fichaHist"></div>
+
+    <div class="titulo">Consultores</div>
+    <div class="tab-wrap"><table style="min-width:820px">
+      <thead><tr><th>Nome</th><th>Nível</th><th>WhatsApp</th><th>Meta mensal (meses abertos)</th><th>Meta anual</th><th></th></tr></thead>
+      <tbody id="corpoEquipe"></tbody></table></div>
+
+    <div class="titulo">Ajustes</div>
+    <div class="bloco cfg">
+      <div><label>Reuniões · meta do período</label><input type="number" id="metaReun" min="0" step="1" onchange="setMetaReunioes(this.value)"></div>
+      <div><label>Meses do período</label><input type="number" id="periodo" min="1" max="24" step="1" onchange="setPeriodo(this.value)"></div>
+      <div class="nota" id="notaPeriodo">–</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <img id="fotoPrev" class="foto-prev oculto" alt="">
+        <button class="mini" onclick="$('fotoInput').click()">Minha foto (imagem do grupo)</button>
+        <button class="mini oculto" id="fotoTirar" onclick="removerFoto()">Tirar</button>
+        <input type="file" id="fotoInput" accept="image/*" class="oculto" onchange="carregarFoto(this)">
+      </div>
+    </div>
+  </section>
+
+  <div class="rodape">
+    <div>Tudo fica salvo na nuvem e aparece igual em qualquer aparelho em que tu entrar com a chave. A nuvem guarda as últimas 300 versões; o backup continua disponível se quiser uma cópia tua. <a href="#" onclick="sairDoAparelho();return false" style="color:inherit">Sair deste aparelho</a></div>
+    <div><b style="font-weight:600;color:var(--preto)">Hendril Leal</b> · Gestor Ademicon · @hendrilleal_ademicon</div>
+  </div>
+</div>
+
+<div id="modal"></div>
+
+<script>
+const MESES_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MES_CURTO=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const CHAVE='painel_equipe_v5', CHAVE_ANTIGA='painel_equipe_v1';
+const COMISSAO=0.02;
+const C={preto:'#231F20',vermelho:'#D03025',vermelhoCl:'#F0776B',rosa:'#FBECEB',vinho:'#3B2120',cinza:'#F6F6F7',ok:'#1F8A4C',ambar:'#B86E00',txt2:'#6B6567',txt3:'#9A9395',linha:'#E6E2E2'};
+/* atividades antigas: ficam só pra manter os dados de backups antigos, não aparecem mais */
+const ATIV_K=['ig','wa','fb','cont','ind','vis','eve','prop','fech'];
+const AUTO6=[['onde','Onde eu tô?'],['chegar','Onde quero chegar?'],['desenv','O que preciso desenvolver?'],['melhorar','Pontos a melhorar'],['manter','Pontos a manter ou fortalecer'],['parar','Pontos pra parar de fazer']];
+const $=id=>document.getElementById(id);
+
+/* ---------- NUMEROS ---------- */
+function milhar(s){ return String(s).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+const rs=v=>'R$ '+milhar(Math.round(v||0));
+const pct=v=>(isFinite(v)?v:0).toFixed(1).replace('.',',')+'%';
+const um=v=>(Math.round(v*10)/10).toString().replace('.',',');
+function curto(v){ v=Math.round(v||0); if(v>=1e6) return (Math.round(v/1e4)/100).toString().replace('.',',')+' mi'; if(v>=1000) return milhar(Math.round(v/1000))+' mil'; return String(v); }
+function corPct(p){ return p>=100?C.ok : p>=70?C.preto : p>=40?C.ambar : C.vermelho; }
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function mascara(v){
+  let s=String(v).replace(/[^\d,]/g,''); const i=s.indexOf(',');
+  if(i>=0) s=s.slice(0,i+1)+s.slice(i+1).replace(/,/g,'');
+  const p=s.split(','); return milhar(p[0]||'')+(i>=0?','+(p[1]||''):'');
+}
+function lerDinheiro(v){
+  let s=String(v).trim(); if(!s) return 0;
+  const temVirgula=s.includes(','); s=s.replace(/\./g,'');
+  if(temVirgula){ const p=s.split(','); return Math.round((parseFloat((p[0]||'0')+'.'+(p[1]||'0'))||0)*1000000); }
+  const n=parseInt(s,10)||0; return (n>0&&n<1000)?n*1000:n;
+}
+const escreveDinheiro=n=>n?milhar(Math.round(n)):'';
+
+/* ---------- DATAS ---------- */
+function hojeZero(){ const h=new Date(); h.setHours(0,0,0,0); return h; }
+function fimMes(a,m){ return new Date(a,m+1,0); }
+function mesFechado(a,m){ return fimMes(a,m)<hojeZero(); }
+function semanas(a,m){
+  const ult=fimMes(a,m).getDate(), r=[];
+  for(let i=0;i<5;i++){ const de=1+7*i; if(de>ult) break; const ate=i<4?Math.min(de+6,ult):ult; r.push({i,de,ate}); }
+  return r;
+}
+function diasUteis(a,m,de,ate){ let n=0; for(let d=de;d<=ate;d++){ const w=new Date(a,m,d).getDay(); if(w!==0&&w!==6) n++; } return n; }
+function isoDia(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function dataBR(iso){ if(!iso) return '–'; const d=iso.length===10?new Date(iso+'T00:00:00'):new Date(iso); return d.toLocaleDateString('pt-BR'); }
+function diasDesde(iso){ if(!iso) return null; const d=new Date((iso.length===10?iso+'T00:00:00':iso)); d.setHours(0,0,0,0); return Math.round((hojeZero()-d)/864e5); }
+function maisDias(n){ const d=hojeZero(); d.setDate(d.getDate()+n); return isoDia(d); }
+
+/* ---------- DADOS INICIAIS ---------- */
+// os dados reais vêm da nuvem; isto é só o ponto de partida de um painel vazio (mês atual, sem ninguém)
+const DADOS_INICIAIS=(()=>{ const h=new Date(); return {metaReunioes:40,periodoMeses:6,consultores:[],meses:[{label:MESES_PT[h.getMonth()]+' '+h.getFullYear(),mes:h.getMonth(),ano:h.getFullYear(),dados:[]}],ativo:0,x1:[]}; })();
+
+let S=null, pagina='metas', x1tab='sem', x1filtro='todos', fichaId=null, fotoGestorImg=null, semDados=false;
+
+const NIVEIS={gestor:['g','Gestor'],pleno:['p','Pleno'],autorizado:['a','Autorizado'],previa:['v','Prévia']};
+const badge=t=>{ const n=NIVEIS[t]; return n?'<span class="tag '+n[0]+'">'+n[1]+'</span>':''; };
+const iniciais=n=>String(n||'').trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+const porId=id=>S.consultores.find(c=>c.id===id);
+const time=()=>S.consultores.filter(c=>c.tipo!=='gestor');
+const todos=()=>[...S.consultores.filter(c=>c.tipo==='gestor'),...time()];
+const mesAtivo=()=>S.meses[S.ativo];
+const rotulo=(m,a)=>MESES_PT[m]+' '+a;
+const novaId=p=>(p||'c')+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function semVazia(){ const o={evtxt:''}; ATIV_K.forEach(k=>o[k]=0); return o; }
+function ordenarMeses(){ const at=mesAtivo(); S.meses.sort((a,b)=>(a.ano*12+a.mes)-(b.ano*12+b.mes)); if(at) S.ativo=S.meses.indexOf(at); }
+function dado(mm,id){
+  if(!mm) return {meta:0,vend:0,reun:0,sem:[]};
+  if(!mm.dados[id]){ const c=porId(id); mm.dados[id]={meta:c?c.metaPadrao||0:0,vend:0,reun:0,sem:[0,1,2,3,4].map(semVazia)}; }
+  return mm.dados[id];
+}
+function plano(mm){
+  if(!mm) return {prior:[],bloq:[],entrega:{}};
+  mm.plan=Object.assign({prior:[],bloq:[],entrega:{}},mm.plan||{});
+  return mm.plan;
+}
+const mesAnterior=mm=>mm?S.meses.find(x=>x.ano*12+x.mes===mm.ano*12+mm.mes-1)||null:null;
+
+/* ---------- CONVERSAO ---------- */
+function normalizar(s){
+  s.versao=6;
+  s.metaReunioes=Number(s.metaReunioes)||40;
+  s.periodoMeses=Number(s.periodoMeses)||6;
+  s.consultores=(s.consultores||[]).map(c=>Object.assign({tipo:'',tel:'',metaPadrao:0,baseMeta:0,baseVend:0},c));
+  s.meses=(s.meses||[]); s.meses.forEach(m=>{ if(!m.dados||Array.isArray(m.dados)) m.dados={}; });
+  s.x1=Array.isArray(s.x1)?s.x1:[];          // X1 do painel antigo: só leitura na ficha
+  s.x1s=(Array.isArray(s.x1s)?s.x1s:[]).map(k=>Object.assign({aprox:'',semana:'',trava:'',comb:[],prox:''},k));
+  s.x1m=(Array.isArray(s.x1m)?s.x1m:[]).map(k=>{ const o=Object.assign({aprox:'',leitura:'',auto:{},comb:[],notas:''},k); AUTO6.forEach(a=>{ if(o.auto[a[0]]==null) o.auto[a[0]]=''; }); return o; });
+  s.nuvem=Object.assign({chave:'',pins:{}},(s.nuvem&&typeof s.nuvem==='object')?s.nuvem:{});
+  s.pauta=(s.pauta&&typeof s.pauta==='object'&&!Array.isArray(s.pauta))?s.pauta:{};
+  Object.keys(s.pauta).forEach(k=>{ s.pauta[k]=(Array.isArray(s.pauta[k])?s.pauta[k]:[]).map(p=>Object.assign({t:'',ok:false,criado:'',feito:''},p)); });
+  if(!s.meses.length){ const h=new Date(); s.meses.push({label:rotulo(h.getMonth(),h.getFullYear()),mes:h.getMonth(),ano:h.getFullYear(),dados:{}}); }
+  if(s.anoBase==null){ s.anoBase=s.meses[0].ano; s.inicioMes=s.meses[0].mes; }
+  s.ativo=Math.max(Math.min(Number(s.ativo)||0,s.meses.length-1),0);
+  return s;
+}
+function migrar(s){
+  if(s&&s.versao>=5) return normalizar(s);
+  const velhos=(s&&s.consultores&&s.consultores.length)?s.consultores:DADOS_INICIAIS.consultores;
+  const mesesV=(s&&s.meses&&s.meses.length)?s.meses:DADOS_INICIAIS.meses;
+  const cons=velhos.map((c,i)=>({id:'c'+i+'_'+Date.now().toString(36),nome:c.nome,tipo:c.tipo||'',tel:c.tel||'',
+    metaPadrao:c.meta||0,baseMeta:0,baseVend:0,_anual:c.metaAnual,_acum:c.acumManual}));
+  const meses=mesesV.map(m=>({label:m.label,mes:m.mes,ano:m.ano,dados:Object.fromEntries(cons.map((c,i)=>{
+    const d=(m.dados&&m.dados[i])||{}; return [c.id,{meta:c.metaPadrao,vend:d.vend||0,reun:d.reun||0,sem:[0,1,2,3,4].map(semVazia)}]; }))}));
+  meses.sort((a,b)=>(a.ano*12+a.mes)-(b.ano*12+b.mes));
+  const p=meses[0], anoBase=p.ano, inicioMes=p.mes;
+  cons.forEach(c=>{
+    if(c._acum!=null&&c._acum!==''){ const v1=p.dados[c.id].vend||0; c.baseVend=Math.max((parseFloat(c._acum)||0)-v1,0); }
+    let soma=0; for(let m=inicioMes;m<12;m++){ const mm=meses.find(x=>x.ano===anoBase&&x.mes===m); soma+=mm?mm.dados[c.id].meta:c.metaPadrao; }
+    c.baseMeta=Math.max((c._anual||(c.metaPadrao*12))-soma,0); delete c._anual; delete c._acum;
+  });
+  return normalizar({versao:6,anoBase,inicioMes,metaReunioes:s&&s.metaReunioes,periodoMeses:s&&s.periodoMeses,
+    consultores:cons,meses,ativo:meses.length-1,x1:[],fotoGestor:(s&&s.fotoGestor)||null});
+}
+
+/* ---------- SALVAR / CARREGAR ---------- */
+/* Tudo salva neste aparelho na hora e sobe pra nuvem logo depois. Outro aparelho que abrir o painel pega a versão da nuvem. */
+function guardarLocal(){
+  try{ localStorage.setItem(CHAVE,JSON.stringify(S)); localStorage.setItem('painel_versao',String(PV.versao)); localStorage.setItem('painel_pendente',PV.pendente?'1':''); }catch(e){}
+}
+function salvar(){
+  PV.pendente=true; guardarLocal(); estadoTxt('salvando…');
+  clearTimeout(PV.timer); PV.timer=setTimeout(enviarNuvem,1200);
+}
+function carregar(){
+  try{
+    let b=localStorage.getItem(CHAVE); if(b){ S=migrar(JSON.parse(b)); return true; }
+    b=localStorage.getItem(CHAVE_ANTIGA); if(b){ S=migrar(JSON.parse(b)); return true; }
+  }catch(e){}
+  return false;
+}
+/* ---------- NUVEM DO PAINEL: o mesmo painel em qualquer aparelho ---------- */
+const PV={versao:0,pendente:false,timer:null,enviando:false};
+function lerChaveLocal(){ try{ return localStorage.getItem('painel_chave')||''; }catch(e){ return ''; } }
+function gravarChaveLocal(v){ try{ v?localStorage.setItem('painel_chave',v):localStorage.removeItem('painel_chave'); }catch(e){} }
+function nomeAparelho(){ const u=navigator.userAgent;
+  return /iPad/.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)?'iPad':/iPhone/.test(u)?'iPhone':/Android/.test(u)?'Android':/Windows/.test(u)?'computador Windows':/Mac/.test(u)?'Mac':'outro aparelho'; }
+const horaAgora=()=>new Date().toLocaleTimeString('pt-BR').slice(0,5);
+function estadoTxt(t){ const e=$('estado'); if(e) e.textContent=t; }
+async function enviarNuvem(){
+  if(PV.enviando){ clearTimeout(PV.timer); PV.timer=setTimeout(enviarNuvem,800); return; }
+  if(!PV.pendente||!chaveNuvem()) return;
+  PV.enviando=true;
+  try{
+    const r=await nuvem('g_painel_salvar',{p_chave:chaveNuvem(),p_estado:S,p_versao_base:PV.versao,p_aparelho:nomeAparelho()});
+    if(r.ok){ PV.versao=r.versao; PV.pendente=false; guardarLocal(); estadoTxt('salvo na nuvem '+horaAgora()); }
+    else if(r.conflito){
+      PV.pendente=false; await baixarNuvem();
+      alert('O painel foi alterado em outro aparelho ('+(r.aparelho||'outro aparelho')+') enquanto tu mexia aqui. Carreguei a versão mais nova. O que tu tinha mudado aqui ficou guardado no histórico, nada se perdeu.');
+    }
+  }catch(e){
+    if(String(e.message).includes('chave_invalida')){ PV.enviando=false; return pedirChave('A chave não confere. Confere e entra de novo.'); }
+    estadoTxt('sem internet · salva quando voltar'); clearTimeout(PV.timer); PV.timer=setTimeout(enviarNuvem,15000);
+  }
+  PV.enviando=false;
+}
+async function baixarNuvem(){
+  const r=await nuvem('g_painel_ler',{p_chave:chaveNuvem()});
+  if(!r) return false;
+  S=migrar(r.estado); PV.versao=r.versao; semDados=false; guardarLocal(); definirFotoGestor(S.fotoGestor); tudo();
+  estadoTxt('atualizado '+horaAgora());
+  return true;
+}
+const digitando=()=>{ const a=document.activeElement; return a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); };
+async function sincronizar(){
+  if(!S||!chaveNuvem()) return;
+  try{
+    if(PV.pendente) return enviarNuvem();
+    const v=await nuvem('g_painel_versao',{p_chave:chaveNuvem()});
+    if(!v.versao){ // nuvem vazia: o primeiro aparelho com dados sobe os dele
+      if(!semDados){ PV.pendente=true; return enviarNuvem(); }
+      estadoTxt('nuvem vazia · traz teus dados'); return;
+    }
+    if(v.versao!==PV.versao){ if(!digitando()) await baixarNuvem(); }
+    else estadoTxt('salvo na nuvem');
+  }catch(e){
+    if(String(e.message).includes('chave_invalida')) return pedirChave('A chave não confere. Confere e entra de novo.');
+    estadoTxt('sem internet · usando o que tá neste aparelho');
+  }
+}
+function pedirChave(aviso){
+  $('modal').innerHTML=`<div class="fundo" style="position:fixed;inset:0;background:rgba(35,31,32,.85);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;border-radius:14px;padding:22px;max-width:380px;width:100%">
+      <div style="font-size:18px;font-weight:600">Painel da Equipe</div>
+      <div style="font-size:13px;color:var(--txt2);margin-top:6px;line-height:1.5">Digita a <b>chave do painel</b>. Ela fica guardada neste aparelho, e o painel fica igual em todos os aparelhos em que tu entrar.</div>
+      ${aviso?`<div style="font-size:13px;color:var(--vermelho);margin-top:10px">${esc(aviso)}</div>`:''}
+      <input id="chEntrada" type="password" autocomplete="current-password" style="width:100%;margin-top:14px;font-size:16px;padding:12px;border:1.5px solid var(--linha);border-radius:10px">
+      <div id="chErro" style="font-size:13px;color:var(--vermelho);min-height:18px;margin-top:8px"></div>
+      <button class="btn forte" id="chBt" style="width:100%;padding:12px;margin-top:4px">Entrar</button>
+    </div></div>`;
+  const ir=async()=>{ const v=$('chEntrada').value.trim(); if(!v) return; $('chBt').disabled=true;
+    try{ await nuvem('g_ok',{p_chave:v}); gravarChaveLocal(v); $('modal').innerHTML=''; iniciarPainel(); }
+    catch(e){ $('chErro').textContent=String(e.message).includes('chave_invalida')?'Chave errada.':'Sem internet agora. Tenta de novo.'; $('chBt').disabled=false; } };
+  $('chBt').onclick=ir; $('chEntrada').addEventListener('keydown',e=>{ if(e.key==='Enter') ir(); }); $('chEntrada').focus();
+}
+let painelIniciado=false;
+async function iniciarPainel(){
+  if(!chaveNuvem()) return pedirChave();
+  // mostra na hora o que este aparelho já tem, e confere a nuvem em seguida
+  if(!S){ if(!carregar()){ S=migrar(null); semDados=true; } }
+  try{ PV.versao=Number(localStorage.getItem('painel_versao'))||0; PV.pendente=localStorage.getItem('painel_pendente')==='1'; }catch(e){}
+  definirFotoGestor(S.fotoGestor); tudo();
+  if(!painelIniciado){ painelIniciado=true; let pIni='metas'; try{ pIni=sessionStorage.getItem('painel_pag')||'metas'; }catch(e){} irPara(pIni); }
+  estadoTxt('conferindo a nuvem…');
+  await sincronizar();
+  buscarDiario(true);
+}
+function sairDoAparelho(){
+  if(!confirm('Tirar a chave e os dados do painel deste aparelho? Na nuvem continua tudo.')) return;
+  try{ ['painel_chave','painel_versao','painel_pendente',CHAVE,CHAVE_ANTIGA,'painel_diario_cache'].forEach(k=>localStorage.removeItem(k)); }catch(e){}
+  location.reload();
+}
+function renderAviso(){
+  $('avisoTopo').innerHTML= semDados? `<div class="aviso"><div><b>Traz teus dados pra nuvem (só uma vez).</b> No painel antigo (o arquivo que tu usava), clica em <b>Baixar backup</b>. Aqui, clica em <b>Restaurar</b> e escolhe esse arquivo. Daí em diante o painel fica igual no computador, no iPhone e no iPad.</div>
+    <button class="mini" onclick="$('arq').click()">Restaurar agora</button></div>` : '';
+}
+
+/* ---------- FOTO ---------- */
+function definirFotoGestor(u){
+  S.fotoGestor=u||null; fotoGestorImg=S.fotoGestor?Object.assign(new Image(),{src:S.fotoGestor}):null;
+  const el=$('fotoPrev');
+  if(S.fotoGestor){ el.src=S.fotoGestor; el.classList.remove('oculto'); $('fotoTirar').classList.remove('oculto'); }
+  else { el.classList.add('oculto'); el.removeAttribute('src'); $('fotoTirar').classList.add('oculto'); }
+}
+function carregarFoto(input){
+  const f=input.files&&input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{ const img=new Image(); img.onload=()=>{ const t=240,cv=document.createElement('canvas'); cv.width=t; cv.height=t;
+      const x=cv.getContext('2d'),m=Math.min(img.width,img.height); x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,t,t);
+      definirFotoGestor(cv.toDataURL('image/jpeg',.85)); salvar(); }; img.src=e.target.result; };
+  r.readAsDataURL(f); input.value='';
+}
+function removerFoto(){ if(!confirm('Tirar tua foto da imagem do grupo?')) return; definirFotoGestor(null); salvar(); }
+
+/* ---------- MES ---------- */
+function infoMes(m){
+  m=m||mesAtivo(); if(!m) return {total:0,decorridos:0,restantes:0,situacao:'–'};
+  const ult=fimMes(m.ano,m.mes).getDate(), total=diasUteis(m.ano,m.mes,1,ult), h=new Date();
+  if(h.getFullYear()===m.ano&&h.getMonth()===m.mes){ const d=h.getDate(); return {total,decorridos:diasUteis(m.ano,m.mes,1,d),restantes:diasUteis(m.ano,m.mes,d,ult),situacao:'corrente'}; }
+  if(fimMes(m.ano,m.mes)<h) return {total,decorridos:total,restantes:0,situacao:'fechado'};
+  return {total,decorridos:0,restantes:total,situacao:'futuro'};
+}
+function renderAbas(){
+  const bar=$('meses'); bar.innerHTML='';
+  S.meses.forEach((m,i)=>{
+    const tem=Object.values(m.dados).some(d=>d.vend>0||d.reun>0);
+    const b=document.createElement('button'); b.className='aba'+(i===S.ativo?' on':'');
+    b.innerHTML=(tem?'<span class="pt"></span>':'')+m.label+(S.meses.length>1?'<span class="x" title="Remover" onclick="event.stopPropagation();removerMes('+i+')">×</span>':'');
+    b.onclick=()=>{ S.ativo=i; salvar(); tudo(); }; bar.appendChild(b);
+  });
+  const add=document.createElement('button'); add.className='aba-add'; add.textContent='+ mês'; add.onclick=novoMes; bar.appendChild(add);
+  $('planSel').innerHTML=S.meses.map((m,i)=>`<option value="${i}"${i===S.ativo?' selected':''}>${m.label}</option>`).join('');
+}
+function novoMes(){
+  const u=S.meses[S.meses.length-1]; let mes,ano;
+  if(u){ mes=u.mes+1; ano=u.ano; if(mes>11){mes=0;ano++;} } else { const h=new Date(); mes=h.getMonth(); ano=h.getFullYear(); }
+  const dados={}; S.consultores.forEach(c=>{ const ant=u&&u.dados[c.id]; dados[c.id]={meta:ant?ant.meta:(c.metaPadrao||0),vend:0,reun:0,sem:[0,1,2,3,4].map(semVazia)}; });
+  S.meses.push({label:rotulo(mes,ano),mes,ano,dados}); S.ativo=S.meses.length-1; salvar(); tudo();
+}
+function removerMes(i){
+  if(!confirm('Remover '+S.meses[i].label+'? Os lançamentos e o planejamento desse mês somem.')) return;
+  S.meses.splice(i,1); if(S.ativo>=S.meses.length) S.ativo=S.meses.length-1;
+  if(!S.meses.length) novoMes(); else { salvar(); tudo(); }
+}
+function setMetaReunioes(v){ S.metaReunioes=Math.max(parseInt(v)||0,0); salvar(); tudo(); }
+function setPeriodo(v){ S.periodoMeses=Math.max(parseInt(v)||1,1); salvar(); tudo(); }
+
+/* ---------- ANO ---------- */
+const anoRef=()=>{ const mm=mesAtivo(); return mm?mm.ano:S.anoBase; };
+function itensAno(c,ano){
+  const ini=ano===S.anoBase?S.inicioMes:0, r=[];
+  for(let m=ini;m<12;m++){
+    const mm=S.meses.find(x=>x.ano===ano&&x.mes===m), d=mm?dado(mm,c.id):null, fx=(c.fixas||{})[ano+'-'+m];
+    r.push({mes:m,mm,meta:d?(d.meta||0):(fx!=null?fx:(c.metaPadrao||0)),vend:d?(d.vend||0):0,fechado:mesFechado(ano,m)});
+  }
+  return r;
+}
+function congelarFechados(c){
+  const anos=[...new Set([S.anoBase,anoRef()])];
+  anos.forEach(ano=>{ const ini=ano===S.anoBase?S.inicioMes:0;
+    for(let m=ini;m<12;m++){ const k=ano+'-'+m;
+      if(mesFechado(ano,m)&&!S.meses.some(x=>x.ano===ano&&x.mes===m)){ c.fixas=c.fixas||{}; if(c.fixas[k]==null) c.fixas[k]=c.metaPadrao||0; } } });
+}
+const temBase=ano=>ano===S.anoBase&&S.inicioMes>0;
+const metaAnual=(c,ano)=>(temBase(ano)?c.baseMeta||0:0)+itensAno(c,ano).reduce((s,i)=>s+i.meta,0);
+const vendPainel=(c,ano)=>itensAno(c,ano).reduce((s,i)=>s+i.vend,0);
+const vendAno=(c,ano)=>(temBase(ano)?c.baseVend||0:0)+vendPainel(c,ano);
+function setMetaAnual(id,valor){
+  const c=porId(id); if(!c) return;
+  const ano=anoRef(), novo=lerDinheiro(valor), delta=novo-metaAnual(c,ano);
+  if(!delta){ tudo(); return; }
+  const abertos=itensAno(c,ano).filter(i=>!i.fechado);
+  if(!abertos.length){ alert('Todos os meses de '+ano+' já fecharam. Não tem mês aberto pra receber a diferença.'); tudo(); return; }
+  const por=Math.round(delta/abertos.length); let mexeu=false;
+  abertos.forEach(i=>{ if(i.mm){ const d=dado(i.mm,id); d.meta=Math.max((d.meta||0)+por,0); }
+    else if(!mexeu){ congelarFechados(c); c.metaPadrao=Math.max((c.metaPadrao||0)+por,0); mexeu=true; } });
+  const sobra=novo-metaAnual(c,ano), alvo=abertos.find(i=>i.mm);
+  if(sobra&&alvo){ const d=dado(alvo.mm,id); d.meta=Math.max((d.meta||0)+sobra,0); }
+  salvar(); tudo();
+}
+function setMetaMes(id,valor){
+  const mm=mesAtivo(), c=porId(id); if(!mm||!c) return;
+  const v=lerDinheiro(valor); dado(mm,id).meta=v;
+  if(mm===S.meses[S.meses.length-1]){ congelarFechados(c); c.metaPadrao=v; }
+  salvar(); tudo();
+}
+function setMetaPadrao(id,valor){
+  const c=porId(id); if(!c) return;
+  const v=lerDinheiro(valor); congelarFechados(c); c.metaPadrao=v;
+  S.meses.forEach(mm=>{ if(!mesFechado(mm.ano,mm.mes)) dado(mm,id).meta=v; });
+  salvar(); tudo();
+}
+function setBaseVend(id,valor){ const c=porId(id); if(!c) return; c.baseVend=lerDinheiro(valor); salvar(); tudo(); }
+const reunPeriodo=id=>S.meses.reduce((t,m)=>t+(m.dados[id]?m.dados[id].reun||0:0),0);
+function lancarVenda(id,valor){ const mm=mesAtivo(); if(!mm) return; dado(mm,id).vend=lerDinheiro(valor); salvar(); tudo(); }
+function lancarReun(id,valor){ const mm=mesAtivo(); if(!mm) return; dado(mm,id).reun=Math.max(parseInt(valor)||0,0); salvar(); tudo(); }
+
+/* ---------- METAS: RESUMO E TABELA ---------- */
+function calcTime(mm){
+  mm=mm||mesAtivo(); let vend=0,reun=0,meta=0,reunPer=0;
+  time().forEach(c=>{ const d=dado(mm,c.id); vend+=d.vend||0; reun+=d.reun||0; meta+=d.meta||0; reunPer+=reunPeriodo(c.id); });
+  const n=time().length; return {vend,reun,meta,reunPer,metaPer:n*S.metaReunioes,n,com:vend*COMISSAO};
+}
+function totais(){
+  const t=calcTime(), di=infoMes(), set=(id,txt,cor)=>{ const e=$(id); e.textContent=txt; e.style.color=cor||''; };
+  const pV=t.meta>0?t.vend/t.meta*100:0, refMes=S.periodoMeses>0?S.metaReunioes/S.periodoMeses:0;
+  $('mesAtual').textContent=mesAtivo()?mesAtivo().label:'–';
+  set('c-meta',t.meta>0?rs(t.meta):'defina as metas');
+  set('c-vend',rs(t.vend),C.vermelho);
+  set('c-pct',t.meta>0?pct(pV):'–',corPct(pV));
+  const falta=Math.max(t.meta-t.vend,0);
+  $('c-falta').textContent=t.meta>0?(falta<=0?'meta batida':'faltam '+rs(falta)):'–';
+  set('c-com',rs(t.com),C.ok);
+  set('c-reun',t.reun); $('c-reun-pe').textContent='referência do mês: '+(t.n*refMes).toFixed(0);
+  const pR=t.metaPer>0?t.reunPer/t.metaPer*100:0;
+  set('c-reun-per',t.reunPer+' / '+t.metaPer,corPct(pR));
+  $('c-reun-per-pe').textContent=t.metaPer>0?pct(pR)+' · faltam '+Math.max(t.metaPer-t.reunPer,0):'–';
+  const proj=di.decorridos>0?t.vend/di.decorridos*di.total:0, pp=t.meta>0?proj/t.meta*100:0;
+  if(di.situacao==='corrente'&&di.decorridos>0){ set('c-proj',rs(proj)); $('c-proj-pe').textContent=t.meta>0?pct(pp)+' da meta no ritmo atual':'no ritmo atual'; }
+  else if(di.situacao==='fechado'){ set('c-proj',rs(t.vend)); $('c-proj-pe').textContent='mês fechado · '+di.total+' dias úteis'; }
+  else { set('c-proj','–'); $('c-proj-pe').textContent='o mês ainda não começou'; }
+  if(di.restantes>0){ set('c-ritmo',falta<=0?'meta batida':rs(falta/di.restantes)); $('c-ritmo-pe').textContent='por dia útil, nos '+di.restantes+' que faltam'; }
+  else { set('c-ritmo','–'); $('c-ritmo-pe').textContent='sem dias úteis restantes'; }
+  $('metaReun').value=S.metaReunioes; $('periodo').value=S.periodoMeses;
+  $('notaPeriodo').innerHTML=`<b>${S.metaReunioes} reuniões por consultor no período todo</b>, não por mês. Em ${S.periodoMeses} meses dá <b>${um(refMes)} por mês</b>. Lançados até agora: ${S.meses.length} de ${S.periodoMeses}.`;
+}
+function renderMes(){
+  const corpo=$('corpoMes'), mm=mesAtivo(), di=infoMes(), refMes=S.periodoMeses>0?S.metaReunioes/S.periodoMeses:0;
+  const linha=c=>{
+    const d=dado(mm,c.id), meta=d.meta||0, pV=meta>0?d.vend/meta*100:0, falta=Math.max(meta-d.vend,0), cor=corPct(pV);
+    const acum=reunPeriodo(c.id), pR=S.metaReunioes>0?acum/S.metaReunioes*100:0;
+    const proj=di.decorridos>0?d.vend/di.decorridos*di.total:0;
+    return `<tr class="${c.tipo==='gestor'?'gestor':''}">
+      <td class="nome-cel">${esc(c.nome)}${badge(c.tipo)}</td>
+      <td><input class="inp din" inputmode="decimal" value="${escreveDinheiro(meta)}" placeholder="0" oninput="this.value=mascara(this.value)" onblur="setMetaMes('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>
+      <td><input class="inp din vend" inputmode="decimal" value="${escreveDinheiro(d.vend)}" placeholder="0" oninput="this.value=mascara(this.value)" onblur="lancarVenda('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()">${dicaVenda(c.id)}</td>
+      <td style="min-width:130px"><div class="barra"><i style="width:${Math.min(pV,100)}%;background:${cor===C.preto?C.vermelho:cor}"></i></div><span class="pc" style="color:${cor};font-size:13px">${meta>0?pct(pV):'–'}</span></td>
+      <td class="fal ${falta<=0&&meta>0?'ok':''}">${meta>0?(falta<=0?'meta batida':rs(falta)):'–'}</td>
+      <td class="fal" style="font-weight:600;color:var(--preto)">${di.situacao==='fechado'||!di.decorridos?'–':rs(proj)}</td>
+      <td class="pc" style="color:var(--ok)">${d.vend>0?rs(d.vend*COMISSAO):'–'}</td>
+      <td class="sep"><input class="inp curto" type="number" min="0" step="1" value="${d.reun||''}" placeholder="0" onchange="lancarReun('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"><span class="mini-rot">ref. ${um(refMes)}/mês</span>${dicaReun(c.id)}</td>
+      <td><span class="pc" style="color:${corPct(pR)}">${acum}</span> <span class="fal">/ ${S.metaReunioes}</span></td></tr>`;
+  };
+  const g=S.consultores.filter(c=>c.tipo==='gestor').map(linha).join(''), tm=time().map(linha).join('');
+  const t=calcTime(), pT=t.meta>0?t.vend/t.meta*100:0;
+  corpo.innerHTML=g+(g&&tm?'<tr class="divisor"><td colspan="9"></td></tr>':'')+tm+
+    `<tr class="total"><td>Time</td><td>${rs(t.meta)}</td><td style="color:var(--vermelho)">${rs(t.vend)}</td><td class="pc" style="color:${corPct(pT)}">${t.meta>0?pct(pT):'–'}</td>
+     <td class="fal">${t.meta>0?(t.meta-t.vend<=0?'meta batida':rs(t.meta-t.vend)):'–'}</td><td></td><td style="color:var(--ok)">${rs(t.com)}</td><td class="sep">${t.reun}</td><td>${t.reunPer} <span class="fal">/ ${t.metaPer}</span></td></tr>`;
+}
+function renderAno(){
+  const ano=anoRef(), base=temBase(ano), corpo=$('corpoAno');
+  $('anoRefTxt').textContent=ano;
+  $('thBase').textContent=base?'Vendido de jan a '+MES_CURTO[S.inicioMes-1]:'Vendido antes do painel';
+  corpo.innerHTML=todos().map(c=>{
+    const metaA=metaAnual(c,ano), vp=vendPainel(c,ano), total=vendAno(c,ano), pV=metaA>0?total/metaA*100:0, falta=Math.max(metaA-total,0);
+    const abertos=itensAno(c,ano).filter(i=>!i.fechado).length, metaPainel=itensAno(c,ano).reduce((s,i)=>s+i.meta,0), ini=ano===S.anoBase?S.inicioMes:0;
+    const nota=base?`antes: ${rs(c.baseMeta)} · ${MES_CURTO[ini]} a dez: ${rs(metaPainel)}`:`jan a dez: ${rs(metaPainel)}`;
+    const cor=corPct(pV);
+    return `<tr class="${c.tipo==='gestor'?'gestor':''}">
+      <td class="nome-cel">${esc(c.nome)}${badge(c.tipo)}</td>
+      <td><input class="inp din" inputmode="decimal" value="${escreveDinheiro(metaA)}" placeholder="0" oninput="this.value=mascara(this.value)" onblur="setMetaAnual('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"><div class="nota-ano">${nota}</div></td>
+      <td>${base?`<input class="inp din" inputmode="decimal" value="${escreveDinheiro(c.baseVend)}" placeholder="0" oninput="this.value=mascara(this.value)" onblur="setBaseVend('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()">`:'<span class="fal">–</span>'}</td>
+      <td class="pc">${rs(vp)}</td>
+      <td class="pc" style="color:var(--vermelho)">${rs(total)}</td>
+      <td style="min-width:130px"><div class="barra"><i style="width:${Math.min(pV,100)}%;background:${cor===C.preto?C.vermelho:cor}"></i></div><span class="pc" style="color:${cor};font-size:13px">${metaA>0?pct(pV):'–'}</span></td>
+      <td class="fal ${falta<=0&&metaA>0?'ok':''}">${metaA>0?(falta<=0?'meta batida':rs(falta)):'–'}</td>
+      <td class="fal" style="font-weight:600;color:var(--preto)">${falta<=0||!abertos?'–':rs(falta/abertos)}${falta>0&&abertos?`<span class="mini-rot">${abertos} ${abertos===1?'mês aberto':'meses abertos'}</span>`:''}</td>
+      <td class="pc" style="color:var(--ok)">${rs(total*COMISSAO)}</td></tr>`;
+  }).join('');
+}
+
+/* ---------- PLANEJAMENTO ---------- */
+function metasSemana(mm,meta){
+  const tot=diasUteis(mm.ano,mm.mes,1,fimMes(mm.ano,mm.mes).getDate());
+  const sem=semanas(mm.ano,mm.mes).map(s=>{ const du=diasUteis(mm.ano,mm.mes,s.de,s.ate); return {...s,du,v:tot?Math.round(meta*du/tot/1000)*1000:0}; });
+  const soma=sem.reduce((a,s)=>a+s.v,0), ult=[...sem].reverse().find(s=>s.du>0);
+  if(ult) ult.v+=meta-soma; // fecha a conta certinho
+  return sem;
+}
+function renderPlan(){
+  const mm=mesAtivo(), ant=mesAnterior(mm), pl=plano(mm);
+  $('planMes').textContent=mm?mm.label:'–';
+  $('planAnt').textContent=ant?ant.label:'sem o mês anterior no painel';
+  // 01 revisão
+  if(!ant){ $('planRev').innerHTML=`<div class="vazio">O mês anterior a ${mm?mm.label:''} não está no painel. Quando tiver, a revisão de meta x realizado aparece aqui sozinha.</div>`; }
+  else{
+    const t=calcTime(ant), pT=t.meta>0?t.vend/t.meta*100:0;
+    const linhas=time().map(c=>{
+      const d=dado(ant,c.id), p=d.meta>0?d.vend/d.meta*100:0, ok=d.meta>0&&d.vend>=d.meta, e=pl.entrega[c.id]||{conv:false,obs:''};
+      return `<tr><td class="nome-cel">${esc(c.nome)}${badge(c.tipo)}</td><td>${rs(d.meta)}</td><td class="pc" style="color:var(--vermelho)">${rs(d.vend)}</td>
+        <td style="min-width:120px"><div class="barra"><i style="width:${Math.min(p,100)}%;background:${corPct(p)===C.preto?C.vermelho:corPct(p)}"></i></div><span class="pc" style="color:${corPct(p)};font-size:13px">${d.meta>0?pct(p):'–'}</span></td>
+        <td>${d.meta<=0?'<span class="st ne">sem meta</span>':ok?'<span class="st ok">Entregou</span>':'<span class="st no">Explica no privado</span>'}</td>
+        <td>${!ok&&d.meta>0?`<label style="display:flex;gap:7px;align-items:center;font-size:12.5px;white-space:nowrap;cursor:pointer"><input type="checkbox" style="accent-color:var(--vermelho);width:16px;height:16px"${e.conv?' checked':''} onchange="setEntrega('${c.id}','conv',this.checked)">conversado</label>`:''}</td>
+        <td style="min-width:220px">${!ok&&d.meta>0?`<input class="inp" placeholder="Motivo que ele trouxe (fica só aqui)" value="${esc(e.obs)}" onblur="setEntrega('${c.id}','obs',this.value)">`:''}</td></tr>`;
+    }).join('');
+    $('planRev').innerHTML=`<div class="grade" style="margin-bottom:12px">
+        <div class="card top"><div class="rot">Meta do time</div><div class="val">${rs(t.meta)}</div></div>
+        <div class="card top"><div class="rot">Realizado</div><div class="val" style="color:var(--vermelho)">${rs(t.vend)}</div></div>
+        <div class="card top"><div class="rot">% da meta</div><div class="val" style="color:${corPct(pT)}">${t.meta>0?pct(pT):'–'}</div></div>
+        <div class="card top"><div class="rot">Reuniões no mês</div><div class="val">${t.reun}</div></div></div>
+      <div class="tab-wrap"><table style="min-width:900px"><thead><tr><th>Consultor</th><th>Meta</th><th>Realizado</th><th>%</th><th>Situação</th><th></th><th>Motivo (privado)</th></tr></thead><tbody>${linhas}</tbody></table></div>
+      <div class="legenda">O motivo fica só no painel. No texto pro grupo vai apenas meta x realizado.</div>`;
+  }
+  // 02 semanas
+  const sem=mm?semanas(mm.ano,mm.mes):[];
+  $('cabSem').innerHTML=`<tr><th>Consultor</th><th>Meta do mês</th>${sem.map(s=>`<th>Sem ${s.i+1}<span class="mini-rot" style="text-transform:none;letter-spacing:0;font-weight:400">${s.de} a ${s.ate} · ${diasUteis(mm.ano,mm.mes,s.de,s.ate)} dias úteis</span></th>`).join('')}</tr>`;
+  const tot=new Array(sem.length).fill(0); let totMeta=0;
+  const ls=time().map(c=>{ const d=dado(mm,c.id), ms=metasSemana(mm,d.meta||0); totMeta+=d.meta||0; ms.forEach((s,i)=>tot[i]+=s.v);
+    return `<tr><td class="nome-cel">${esc(c.nome)}${badge(c.tipo)}</td>
+      <td style="max-width:150px"><input class="inp din" inputmode="decimal" value="${escreveDinheiro(d.meta)}" placeholder="0" oninput="this.value=mascara(this.value)" onblur="setMetaMes('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>
+      ${ms.map(s=>`<td class="pc">${s.du?rs(s.v):'<span class="fal">–</span>'}</td>`).join('')}</tr>`; }).join('');
+  $('corpoSem').innerHTML=ls+`<tr class="total"><td>Time</td><td>${rs(totMeta)}</td>${tot.map(v=>`<td>${rs(v)}</td>`).join('')}</tr>`;
+  // 03 e 04
+  $('prior').innerHTML=pl.prior.length?pl.prior.map((p,i)=>`<div class="lin"><span class="n">${i+1}</span><input class="inp" type="text" value="${esc(p.t)}" placeholder="Prioridade" onblur="setPrior(${i},this.value)"><button class="lixo" onclick="delPrior(${i})">×</button></div>`).join('')
+    :'<div class="fal" style="padding:6px 2px">Nenhuma prioridade ainda.</div>';
+  $('bloq').innerHTML=pl.bloq.length?pl.bloq.map((b,i)=>`<div class="lin${b.ok?' feito':''}"><input type="checkbox"${b.ok?' checked':''} title="Resolvido" onchange="setBloq(${i},'ok',this.checked)">
+      <input class="inp" type="text" value="${esc(b.t)}" placeholder="O que pode travar" onblur="setBloq(${i},'t',this.value)">
+      <input class="inp" type="text" style="max-width:150px;flex:none" value="${esc(b.quem)}" placeholder="Quem resolve" onblur="setBloq(${i},'quem',this.value)">
+      <button class="lixo" onclick="delBloq(${i})">×</button></div>`).join('')
+    :'<div class="fal" style="padding:6px 2px">Nenhum bloqueio levantado.</div>';
+}
+function setEntrega(cid,k,v){ const pl=plano(mesAtivo()); pl.entrega[cid]=Object.assign({conv:false,obs:''},pl.entrega[cid]||{}); pl.entrega[cid][k]=v; salvar(); }
+function addPrior(){ plano(mesAtivo()).prior.push({t:''}); salvar(); renderPlan(); focarUltimo('prior'); }
+function setPrior(i,v){ plano(mesAtivo()).prior[i].t=v; salvar(); }
+function delPrior(i){ plano(mesAtivo()).prior.splice(i,1); salvar(); renderPlan(); }
+function addBloq(){ plano(mesAtivo()).bloq.push({t:'',quem:'',ok:false}); salvar(); renderPlan(); focarUltimo('bloq'); }
+function setBloq(i,k,v){ plano(mesAtivo()).bloq[i][k]=v; salvar(); if(k==='ok') renderPlan(); }
+function delBloq(i){ plano(mesAtivo()).bloq.splice(i,1); salvar(); renderPlan(); }
+function focarUltimo(id){ const ins=$(id).querySelectorAll('input[type=text]'); const el=id==='bloq'?ins[ins.length-2]:ins[ins.length-1]; if(el) el.focus(); }
+function textoGrupo(){
+  const mm=mesAtivo(), ant=mesAnterior(mm), pl=plano(mm), L=[];
+  L.push('*PLANEJAMENTO · '+mm.label.toUpperCase()+'*','');
+  if(ant){ const t=calcTime(ant);
+    L.push('*'+ant.label+': meta x realizado*','Time: '+rs(t.vend)+' de '+rs(t.meta)+(t.meta>0?' ('+pct(t.vend/t.meta*100)+')':''));
+    time().forEach(c=>{ const d=dado(ant,c.id); L.push(c.nome+': '+rs(d.vend)+' de '+rs(d.meta)+(d.meta>0?' ('+pct(d.vend/d.meta*100)+')':'')); }); L.push(''); }
+  L.push('*Metas de '+MESES_PT[mm.mes].toLowerCase()+'*');
+  const sem=semanas(mm.ano,mm.mes);
+  time().forEach(c=>{ const d=dado(mm,c.id), ms=metasSemana(mm,d.meta||0).filter(s=>s.du>0);
+    L.push(c.nome+': '+rs(d.meta)+(d.meta>0?' · por semana: '+ms.map(s=>curto(s.v)).join(' / '):'')); });
+  const t=calcTime(mm); L.push('Time: '+rs(t.meta),'');
+  const pr=pl.prior.filter(p=>p.t.trim());
+  if(pr.length){ L.push('*Prioridades do mês*'); pr.forEach((p,i)=>L.push((i+1)+'. '+p.t.trim())); L.push(''); }
+  const bl=pl.bloq.filter(b=>b.t.trim());
+  if(bl.length){ L.push('*Bloqueios e quem resolve*'); bl.forEach(b=>L.push((b.ok?'✅ ':'▫️ ')+b.t.trim()+(b.quem.trim()?' · '+b.quem.trim():''))); L.push(''); }
+  L.push('Bora pra cima, time! 🚀');
+  abrirModal('Texto pro grupo',L.join('\n'));
+}
+function abrirModal(titulo,texto,wa){
+  $('modal').innerHTML=`<div class="modal" onclick="if(event.target===this)fecharModal()"><div class="modal-box"><h3>${esc(titulo)}</h3>
+    <textarea id="modalTxt">${esc(texto)}</textarea>
+    <div class="acoes">${wa?`<a class="mini escuro" style="text-decoration:none" target="_blank" href="${wa}">Abrir no WhatsApp</a>`:''}
+      <button class="mini" onclick="fecharModal()">Fechar</button><button class="mini forte" onclick="copiarModal(this)">Copiar</button></div></div></div>`;
+}
+function fecharModal(){ $('modal').innerHTML=''; }
+function copiarModal(b){
+  const ta=$('modalTxt'); ta.select();
+  const ok=()=>{ b.textContent='Copiado ✓'; setTimeout(()=>b.textContent='Copiar',1600); };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(ok,()=>{ document.execCommand('copy'); ok(); });
+  else { document.execCommand('copy'); ok(); }
+}
+
+/* ---------- X1 ---------- */
+function telWa(c){ let n=String((c&&c.tel)||'').replace(/\D/g,''); if(!n) return ''; if(n.length<=11) n='55'+n; return n; }
+function linkWa(c,txt){ const n=telWa(c); return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(txt); }
+function x1Tab(t){ x1tab=t; renderX1(); }
+function x1Filtro(f){ x1filtro=f; renderX1(); }
+const achaS=id=>S.x1s.find(k=>k.id===id), achaM=id=>S.x1m.find(k=>k.id===id);
+function x1Ant(k){ return S.x1s.filter(o=>o.cid===k.cid&&o.id!==k.id&&(o.data<k.data||(o.data===k.data&&o.criado<k.criado))).sort((a,b)=>(b.data+b.criado).localeCompare(a.data+a.criado))[0]||null; }
+function novoX1S(cid){
+  cid=cid||(x1filtro!=='todos'?x1filtro:(time()[0]||{}).id); if(!cid) return;
+  S.x1s.push({id:novaId('s'),cid,data:isoDia(hojeZero()),criado:new Date().toISOString(),aprox:'',semana:'',trava:'',comb:[],prox:maisDias(7)});
+  salvar(); renderX1();
+}
+function mesRefPadrao(){ const h=hojeZero(), alvo=h.getFullYear()*12+h.getMonth()-1; const mm=S.meses.find(x=>x.ano*12+x.mes===alvo); return mm?(mm.ano+'-'+mm.mes):(mesAtivo()?mesAtivo().ano+'-'+mesAtivo().mes:''); }
+const mmPorRef=r=>{ if(!r) return null; const [a,m]=r.split('-').map(Number); return S.meses.find(x=>x.ano===a&&x.mes===m)||null; };
+function novoX1M(cid){
+  cid=cid||(x1filtro!=='todos'?x1filtro:(time()[0]||{}).id); if(!cid) return;
+  const auto={}; AUTO6.forEach(a=>auto[a[0]]='');
+  S.x1m.push({id:novaId('m'),cid,ref:mesRefPadrao(),data:isoDia(hojeZero()),criado:new Date().toISOString(),aprox:'',leitura:'',auto,comb:[],notas:''});
+  salvar(); renderX1();
+}
+function x1Set(tipo,id,campo,valor,re){ const k=tipo==='s'?achaS(id):achaM(id); if(!k) return; k[campo]=valor; salvar(); if(re) renderX1(); }
+function x1Auto(id,campo,valor){ const k=achaM(id); if(!k) return; k.auto[campo]=valor; salvar(); }
+function x1Comb(tipo,id,i,campo,valor,re){ const k=tipo==='s'?achaS(id):achaM(id); if(!k||!k.comb[i]) return; k.comb[i][campo]=valor; salvar(); if(re) renderX1(); }
+function x1AddComb(tipo,id){ const k=tipo==='s'?achaS(id):achaM(id); if(!k) return; k.comb.push({t:'',ok:false}); salvar(); renderX1();
+  const ins=document.querySelectorAll('#x1-'+id+' .comb input[type=text]'); if(ins.length) ins[ins.length-1].focus(); }
+function x1DelComb(tipo,id,i){ const k=tipo==='s'?achaS(id):achaM(id); if(!k) return; k.comb.splice(i,1); salvar(); renderX1(); }
+function x1Remover(tipo,id){ if(!confirm('Apagar esse X1?')) return; if(tipo==='s') S.x1s=S.x1s.filter(k=>k.id!==id); else S.x1m=S.x1m.filter(k=>k.id!==id); salvar(); renderX1(); }
+function combHTML(tipo,k){
+  return `<div class="comb">${k.comb.map((a,i)=>`<div class="lin${a.ok?' feito':''}" style="margin-bottom:7px"><input type="checkbox"${a.ok?' checked':''} onchange="x1Comb('${tipo}','${k.id}',${i},'ok',this.checked,true)">
+      <input class="inp" type="text" value="${esc(a.t)}" placeholder="O que fica combinado" oninput="x1Comb('${tipo}','${k.id}',${i},'t',this.value)">
+      <button class="lixo" onclick="x1DelComb('${tipo}','${k.id}',${i})">×</button></div>`).join('')}
+    <button class="add-linha" style="padding:8px" onclick="x1AddComb('${tipo}','${k.id}')">+ combinado</button></div>`;
+}
+const TA=(tipo,k,campo,ph,rows)=>`<textarea class="ta" rows="${rows||2}" placeholder="${esc(ph)}" oninput="x1Set('${tipo}','${k.id}','${campo}',this.value)">${esc(k[campo])}</textarea>`;
+function selConsultor(tipo,k){ return `<select class="x1-sel" onchange="x1Set('${tipo}','${k.id}','cid',this.value,true)">${time().map(c=>`<option value="${c.id}"${c.id===k.cid?' selected':''}>${esc(c.nome)}</option>`).join('')}${porId(k.cid)?'':'<option selected>(removido)</option>'}</select>`; }
+/* anotações do gestor: o que eu vou falar no X1 (só no painel, nunca no WhatsApp) */
+function pautaDe(cid){ S.pauta[cid]=S.pauta[cid]||[]; return S.pauta[cid]; }
+function addPauta(cid){
+  pautaDe(cid).push({t:'',ok:false,criado:new Date().toISOString(),feito:''}); salvar(); renderX1();
+  const ts=document.querySelectorAll('#pa-'+cid+' .pa-ab textarea'); if(ts.length) ts[ts.length-1].focus();
+}
+function setPauta(cid,i,k,v,re){
+  const p=pautaDe(cid)[i]; if(!p) return; p[k]=v;
+  if(k==='ok') p.feito=v?isoDia(hojeZero()):'';
+  salvar(); if(re) renderX1();
+}
+function delPauta(cid,i){
+  const p=pautaDe(cid)[i]; if(!p) return;
+  if(p.t.trim()&&!confirm('Apagar essa anotação?')) return;
+  pautaDe(cid).splice(i,1); salvar(); renderX1();
+}
+function verPauta(cid){ x1tab='pauta'; x1Filtro(cid); window.scrollTo(0,0); }
+function cardPauta(c){
+  const ls=pautaDe(c.id).map((p,i)=>({...p,i}));
+  const ab=ls.filter(p=>!p.ok), fe=ls.filter(p=>p.ok).sort((a,b)=>String(b.feito).localeCompare(String(a.feito)));
+  return `<div class="x1c" id="pa-${c.id}">
+    <div class="x1-cab"><span class="ini">${iniciais(c.nome)}</span><span class="ag-nome">${esc(c.nome)}</span>${badge(c.tipo)}
+      <span class="esp"></span><span class="info" style="font-size:11.5px;color:var(--txt2)">${ab.filter(p=>p.t.trim()).length?ab.filter(p=>p.t.trim()).length+' pra falar':'nada pendente'}</span></div>
+    <div class="campo"><span class="lab">Pra falar no próximo X1<small>marca quando falar</small></span>
+      <div class="lista-ed pa-ab">${ab.map(p=>`<div class="pa-lin"><input type="checkbox" title="Já falei" onchange="setPauta('${c.id}',${p.i},'ok',this.checked,true)">
+        <textarea class="ta" rows="2" placeholder="Ex: segundo trabalho, horários atrasados, falta de compromisso…" oninput="setPauta('${c.id}',${p.i},'t',this.value)">${esc(p.t)}</textarea>
+        <button class="lixo" onclick="delPauta('${c.id}',${p.i})">×</button></div>`).join('')}</div>
+      <button class="add-linha" style="padding:8px;margin-top:8px" onclick="addPauta('${c.id}')">+ anotação</button></div>
+    ${fe.length?`<div class="campo"><span class="lab">Já falado</span><div class="lista-ed">${fe.slice(0,6).map(p=>`<div class="pa-feito"><input type="checkbox" checked title="Voltar pra pendente" onchange="setPauta('${c.id}',${p.i},'ok',this.checked,true)">
+        <span class="t">${esc(p.t)}${p.feito?`<span class="mini-rot" style="text-decoration:none">falado em ${dataBR(p.feito)}</span>`:''}</span>
+        <button class="lixo" onclick="delPauta('${c.id}',${p.i})">×</button></div>`).join('')}</div></div>`:''}
+  </div>`;
+}
+function pautaNoX1(cid){
+  const ab=pautaDe(cid).map((p,i)=>({...p,i})).filter(p=>!p.ok&&p.t.trim());
+  if(!ab.length) return '';
+  return `<div class="lembra pauta"><b>Pra eu falar · só tu vê</b>${ab.map(p=>`<label><input type="checkbox" onchange="setPauta('${cid}',${p.i},'ok',this.checked,true)"><span style="white-space:pre-wrap">${esc(p.t)}</span></label>`).join('')}
+    <button class="ir" onclick="verPauta('${cid}')">editar anotações</button></div>`;
+}
+function cardSem(k){
+  const c=porId(k.cid), ant=x1Ant(k), pend=ant?ant.comb.map((a,i)=>({...a,i})).filter(a=>a.t.trim()):[];
+  const tot=k.comb.filter(a=>a.t.trim()).length, f=k.comb.filter(a=>a.t.trim()&&a.ok).length;
+  return `<div class="x1c" id="x1-${k.id}">
+    <div class="x1-cab"><span class="ini">${iniciais(c?c.nome:'?')}</span>${selConsultor('s',k)}
+      <input class="x1-data" type="date" value="${k.data}" onchange="x1Set('s','${k.id}','data',this.value,true)">
+      <span class="esp"></span><button class="mini" onclick="resumoS('${k.id}')">WhatsApp</button><button class="lixo" onclick="x1Remover('s','${k.id}')">×</button></div>
+    ${pautaNoX1(k.cid)}
+    ${numsAppX1(k.cid,k.data,7,'7 dias antes do X1')}
+    ${pend.length?`<div class="lembra"><b>Combinados do X1 de ${dataBR(ant.data)}</b>${pend.map(a=>`<label><input type="checkbox"${a.ok?' checked':''} onchange="x1Comb('s','${ant.id}',${a.i},'ok',this.checked,true)">${esc(a.t)}</label>`).join('')}</div>`:''}
+    ${ant&&ant.aprox.trim()?`<div class="lembra" style="background:var(--cinza);border-left-color:var(--preto)"><b style="color:var(--preto)">Da última vez ele contou</b>${esc(ant.aprox)}</div>`:''}
+    <div class="campo"><span class="lab">Aproximação<small>como ele tá, a pessoa antes do número</small></span>${TA('s',k,'aprox','Família, saúde, planos, o que tá rolando…')}</div>
+    <div class="campo"><span class="lab">Como tá a semana<small>o que ele trouxe</small></span>${TA('s',k,'semana','O que andou, o que tá em negociação…')}</div>
+    <div class="campo"><span class="lab">O que tá travando<small>e o que ele precisa de ti</small></span>${TA('s',k,'trava','Onde ele travou, que ajuda precisa…')}</div>
+    <div class="campo"><span class="lab">Combinado até o próximo</span>${combHTML('s',k)}</div>
+    <div class="x1-pe"><span class="info">${tot?f+' de '+tot+' combinados feitos':'Sem combinado ainda'}</span>
+      <label class="info" style="display:flex;gap:8px;align-items:center">Próximo X1 <input class="x1-data" type="date" value="${k.prox||''}" onchange="x1Set('s','${k.id}','prox',this.value,true)"></label></div>
+  </div>`;
+}
+function leituraAuto(d){
+  if(!(d.meta>0)) return {k:'',t:'Sem meta lançada nesse mês.'};
+  const p=d.vend/d.meta*100;
+  if(p>=100) return {k:'baixa',t:'Bateu a meta ('+pct(p)+'). Se bateu com folga ou antes do fim do mês, a meta pode estar baixa.'};
+  if(p<50) return {k:'alta',t:'Ficou longe ('+pct(p)+'). A meta pode estar alta, ou tem algo travando que precisa sair na conversa.'};
+  return {k:'ok',t:'Ficou em '+pct(p)+'. Meta parece no tamanho certo.'};
+}
+const NIVEL_TXT={previa:'<b>Prévia</b> · fica mais perto. Acompanha de perto e corrige sempre no privado.',autorizado:'<b>Autorizado</b> · fica mais perto. Cuidado com autonomia cedo demais.',pleno:'<b>Pleno</b> · tu entrega o que precisa ser feito e ele desenvolve o como.'};
+function cardMes(k){
+  const c=porId(k.cid), mm=mmPorRef(k.ref), d=mm?dado(mm,k.cid):null, la=d?leituraAuto(d):{k:'',t:'Esse mês não está no painel.'};
+  const p=d&&d.meta>0?d.vend/d.meta*100:0;
+  const refs=S.meses.map(m=>`<option value="${m.ano}-${m.mes}"${k.ref===m.ano+'-'+m.mes?' selected':''}>${m.label}</option>`).join('');
+  return `<div class="x1c" id="x1-${k.id}">
+    <div class="x1-cab"><span class="ini">${iniciais(c?c.nome:'?')}</span>${selConsultor('m',k)}
+      <select class="x1-sel" title="Mês avaliado" onchange="x1Set('m','${k.id}','ref',this.value,true)">${refs}</select>
+      <span class="esp"></span><button class="mini" onclick="pedirAuto('${k.id}')">Mandar autoavaliação</button><button class="mini" onclick="resumoM('${k.id}')">WhatsApp</button><button class="lixo" onclick="x1Remover('m','${k.id}')">×</button></div>
+    ${c&&NIVEL_TXT[c.tipo]?`<div class="nivel">${NIVEL_TXT[c.tipo]}</div>`:''}
+    ${pautaNoX1(k.cid)}
+    ${mm?numsAppX1(k.cid,isoDia(new Date(mm.ano,mm.mes+1,1)),fimMes(mm.ano,mm.mes).getDate(),mm.label):''}
+    <div class="nums">
+      <div><small>Meta</small><b>${d?curto(d.meta):'–'}</b></div>
+      <div><small>Realizado</small><b style="color:var(--vermelho)">${d?curto(d.vend):'–'}</b></div>
+      <div><small>%</small><b style="color:${corPct(p)}">${d&&d.meta>0?pct(p):'–'}</b></div>
+      <div><small>Reuniões</small><b>${d?d.reun||0:'–'}</b></div></div>
+    <div class="leitura"><span class="dica">${esc(la.t)}</span>
+      <select class="inp" style="width:auto;min-width:0" onchange="x1Set('m','${k.id}','leitura',this.value)">
+        <option value="">Leitura da meta…</option>${[['baixa','Meta baixa, subir'],['ok','Meta no tamanho certo'],['alta','Meta alta, ajustar']].map(o=>`<option value="${o[0]}"${k.leitura===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select></div>
+    <div class="campo"><span class="lab">Aproximação<small>sempre, antes do número</small></span>${TA('m',k,'aprox','Como ele tá, o que mudou na vida dele…')}</div>
+    <div class="campo"><span class="lab">Autoavaliação<small>ele responde, tu anota</small></span><div class="auto6">
+      ${AUTO6.map(a=>`<div><div class="fal" style="font-weight:600;color:var(--preto);margin-bottom:4px">${a[1]}</div><textarea class="ta" rows="2" oninput="x1Auto('${k.id}','${a[0]}',this.value)">${esc(k.auto[a[0]])}</textarea></div>`).join('')}</div></div>
+    <div class="campo"><span class="lab">Combinados do mês</span>${combHTML('m',k)}</div>
+    <div class="campo"><span class="lab">Notas</span>${TA('m',k,'notas','Livre…')}</div>
+    <div class="x1-pe"><span class="info">Feito em <input class="x1-data" type="date" value="${k.data}" onchange="x1Set('m','${k.id}','data',this.value,true)"></span></div>
+  </div>`;
+}
+function agendaHTML(){
+  if(x1tab==='sem') return time().map(c=>{
+    const ks=S.x1s.filter(k=>k.cid===c.id).sort((a,b)=>(b.data+b.criado).localeCompare(a.data+a.criado)), u=ks[0];
+    let sit='',txt='Ainda não teve X1';
+    if(!u) sit='atrasado';
+    else if(u.prox){ const dd=-diasDesde(u.prox); if(dd<0){ sit='atrasado'; txt='Atrasado '+(-dd)+(dd===-1?' dia':' dias'); } else txt=dd===0?'Próximo é hoje':'Próximo em '+dd+(dd===1?' dia':' dias'); }
+    else { const ds=diasDesde(u.data); sit=ds>7?'atrasado':''; txt=ds===0?'Último foi hoje':ds+(ds===1?' dia':' dias')+' desde o último'; }
+    const al=alertaX1(c.id); if(al.st==='x1'){ sit='atrasado'; txt+=' · diário pede X1'; }
+    return `<div class="ag ${sit}"><div><div class="ag-nome">${esc(c.nome)}</div><div class="ag-sit">${txt}</div></div><button class="mini" onclick="novoX1S('${c.id}')">+ X1</button></div>`;
+  }).join('');
+  const ref=mesRefPadrao(), mm=mmPorRef(ref);
+  return time().map(c=>{
+    const k=S.x1m.find(x=>x.cid===c.id&&x.ref===ref), sit=k?'ok':'';
+    return `<div class="ag ${sit}"><div><div class="ag-nome">${esc(c.nome)}</div><div class="ag-sit">${k?'X1 de '+(mm?MESES_PT[mm.mes].toLowerCase():'')+' feito':'Pendente'+(mm?' · '+MESES_PT[mm.mes].toLowerCase():'')}</div></div>${k?'':`<button class="mini" onclick="novoX1M('${c.id}')">+ X1</button>`}</div>`;
+  }).join('');
+}
+function renderX1(){
+  ['sem','mes','pauta'].forEach(t=>$('x1t-'+t).className='chip'+(x1tab===t?' on':''));
+  $('x1Sub').innerHTML= x1tab==='sem'
+    ? 'Toda semana, 15 minutos. Ver o decorrer da semana: como ele tá, o que andou, o que travou e o combinado até o próximo.'
+    : x1tab==='mes'
+    ? 'No início do mês, olhando o mês que passou. Meta x realizado, leitura da meta, autoavaliação e combinados do mês. Manda a autoavaliação antes pra ele chegar com as respostas pensadas.'
+    : 'O que tu quer falar com cada um no próximo X1. Anota durante a semana, conforme as coisas acontecem. Fica só no painel, não vai no resumo do WhatsApp. O que tiver em aberto aparece no topo do X1 dele.';
+  if(x1filtro!=='todos'&&!porId(x1filtro)) x1filtro='todos';
+  $('x1Filtro').innerHTML=`<button class="chip${x1filtro==='todos'?' on':''}" onclick="x1Filtro('todos')">Todos</button>`+
+    time().map(c=>`<button class="chip${x1filtro===c.id?' on':''}" onclick="x1Filtro('${c.id}')">${esc(c.nome)}</button>`).join('')+
+    (x1tab==='pauta'?'':`<span style="flex:1"></span><button class="mini forte" onclick="${x1tab==='sem'?'novoX1S()':'novoX1M()'}">+ Novo X1</button>`);
+  const g=$('x1grade');
+  $('agenda').classList.toggle('oculto',x1tab==='pauta');
+  if(x1tab==='pauta'){
+    const ls=time().filter(c=>x1filtro==='todos'||c.id===x1filtro);
+    g.innerHTML=ls.length?ls.map(cardPauta).join(''):'<div class="vazio" style="grid-column:1/-1">Nenhum consultor no time ainda.</div>';
+    return;
+  }
+  $('agenda').innerHTML=agendaHTML();
+  const base=(x1tab==='sem'?S.x1s:S.x1m).filter(k=>x1filtro==='todos'||k.cid===x1filtro)
+    .sort((a,b)=>(b.data+b.criado).localeCompare(a.data+a.criado));
+  if(!base.length){ g.innerHTML=`<div class="vazio" style="grid-column:1/-1">Nenhum X1 ${x1tab==='sem'?'semanal':'do mês'} registrado ainda. Começa pelo "+ X1" na agenda acima.</div>`; return; }
+  const lista=x1filtro==='todos'?base.slice(0,12):base;
+  g.innerHTML=lista.map(k=>x1tab==='sem'?cardSem(k):cardMes(k)).join('')+(base.length>lista.length?`<div class="vazio" style="grid-column:1/-1">Mostrando os 12 mais recentes. Filtra por consultor pra ver o histórico todo.</div>`:'');
+}
+function resumoS(id){
+  const k=achaS(id), c=porId(k.cid); if(!c) return;
+  const cb=k.comb.filter(a=>a.t.trim());
+  const txt=`Fala ${c.nome}! Valeu pelo X1 de hoje 🤝\n\n`+(cb.length?`*Nosso combinado${k.prox?' até '+dataBR(k.prox):''}:*\n${cb.map(a=>'▫️ '+a.t.trim()).join('\n')}\n\n`:'')+`Qualquer coisa me chama. Bora!`;
+  abrirModal('Resumo pro '+c.nome,txt,linkWa(c,txt));
+}
+function resumoM(id){
+  const k=achaM(id), c=porId(k.cid); if(!c) return;
+  const mm=mmPorRef(k.ref), d=mm?dado(mm,k.cid):null, cb=k.comb.filter(a=>a.t.trim());
+  let txt=`Fala ${c.nome}! Resumo do nosso X1 do mês 🤝\n\n`;
+  if(d&&mm) txt+=`*${mm.label}:* ${rs(d.vend)} de ${rs(d.meta)}${d.meta>0?' ('+pct(d.vend/d.meta*100)+')':''}\n\n`;
+  if(k.auto.chegar.trim()) txt+=`*Onde tu quer chegar:* ${k.auto.chegar.trim()}\n\n`;
+  if(cb.length) txt+=`*Combinados do mês:*\n${cb.map(a=>'▫️ '+a.t.trim()).join('\n')}\n\n`;
+  txt+='Tô junto. Bora!';
+  abrirModal('Resumo pro '+c.nome,txt,linkWa(c,txt));
+}
+function pedirAuto(id){
+  const k=achaM(id), c=porId(k.cid); if(!c) return;
+  const txt=`Fala ${c.nome}! Antes do nosso X1 do mês, tira uns minutos e responde com calma, sem resposta certa:\n\n${AUTO6.map((a,i)=>(i+1)+'. '+a[1]).join('\n')}\n\nTraz pensado que a gente conversa em cima disso 🤝`;
+  abrirModal('Autoavaliação pro '+c.nome,txt,linkWa(c,txt));
+}
+
+/* ---------- EQUIPE / FICHA ---------- */
+function renderEquipe(){
+  const ano=anoRef();
+  $('corpoEquipe').innerHTML=todos().map(c=>{
+    const opts=[['','Consultor'],['previa','Prévia'],['autorizado','Autorizado'],['pleno','Pleno'],['gestor','Gestor']].map(o=>`<option value="${o[0]}"${c.tipo===o[0]?' selected':''}>${o[1]}</option>`).join('');
+    return `<tr class="${c.tipo==='gestor'?'gestor':''}">
+      <td><input class="inp" value="${esc(c.nome)}" onblur="editar('${c.id}','nome',this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>
+      <td><select class="inp" onchange="editar('${c.id}','tipo',this.value)">${opts}</select></td>
+      <td><input class="inp" type="tel" placeholder="53999691822" value="${esc(c.tel)}" onblur="editar('${c.id}','tel',this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>
+      <td><input class="inp din" inputmode="decimal" value="${escreveDinheiro(c.metaPadrao)}" placeholder="0" oninput="this.value=mascara(this.value)" onblur="setMetaPadrao('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>
+      <td><input class="inp din" inputmode="decimal" value="${escreveDinheiro(metaAnual(c,ano))}" placeholder="0" oninput="this.value=mascara(this.value)" onblur="setMetaAnual('${c.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>
+      <td><button class="lixo" onclick="removerConsultor('${c.id}')" title="Remover">×</button></td></tr>`;
+  }).join('')+'<tr><td colspan="6"><button class="add-linha" onclick="novoConsultor()">+ adicionar consultor</button></td></tr>';
+}
+function editar(id,campo,valor){
+  const c=porId(id); if(!c) return;
+  if(campo==='nome'){ if(!String(valor).trim()) return; const mudou=c.nome!==String(valor).trim(); c.nome=String(valor).trim(); if(mudou) sincNomeNuvem(id); }
+  else if(campo==='tipo') c.tipo=valor; else if(campo==='tel') c.tel=String(valor).trim();
+  salvar(); tudo();
+}
+function removerConsultor(id){
+  const c=porId(id); if(!c) return;
+  if(!confirm('Remover '+c.nome+' do painel? Some com os lançamentos e os X1 dele.')) return;
+  if(liberado(id)) nuvem('g_consultor_bloquear',{p_chave:chaveNuvem(),p_id:id}).catch(()=>{});
+  S.consultores=S.consultores.filter(x=>x.id!==id); S.meses.forEach(m=>delete m.dados[id]);
+  S.x1=S.x1.filter(k=>k.cid!==id); S.x1s=S.x1s.filter(k=>k.cid!==id); S.x1m=S.x1m.filter(k=>k.cid!==id); delete S.pauta[id];
+  salvar(); tudo();
+}
+function novoConsultor(){ S.consultores.push({id:novaId(),nome:'Novo consultor',tipo:'',tel:'',metaPadrao:0,baseMeta:0,baseVend:0}); salvar(); tudo(); }
+function renderFicha(){
+  const lista=todos(); if(!lista.length){ $('fichaChips').innerHTML=''; $('corpoFicha').innerHTML=''; $('fichaHist').innerHTML=''; return; }
+  if(!fichaId||!porId(fichaId)) fichaId=(time()[0]||lista[0]).id;
+  $('fichaChips').innerHTML=lista.map(c=>`<button class="chip${c.id===fichaId?' on':''}" onclick="fichaId='${c.id}';renderFicha()">${esc(c.nome)}</button>`).join('');
+  const c=porId(fichaId); let h='';
+  if(S.inicioMes>0&&(c.baseMeta||c.baseVend)){ const p=c.baseMeta>0?c.baseVend/c.baseMeta*100:0;
+    h+=`<tr style="color:var(--txt2);font-style:italic"><td>Jan a ${MES_CURTO[S.inicioMes-1]} ${S.anoBase}</td><td>${rs(c.baseMeta)}</td><td>${rs(c.baseVend)}</td><td class="pc" style="color:${corPct(p)}">${c.baseMeta>0?pct(p):'–'}</td><td>${rs(c.baseVend*COMISSAO)}</td><td class="sep" colspan="3">antes do painel</td></tr>`; }
+  let tv=0,tr_=0;
+  S.meses.forEach(mm=>{ const d=mm.dados[c.id]; if(!d) return; const p=d.meta>0?d.vend/d.meta*100:0;
+    const ns=S.x1s.filter(k=>k.cid===c.id&&k.data&&+k.data.slice(0,4)===mm.ano&&+k.data.slice(5,7)-1===mm.mes).length;
+    const xm=S.x1m.some(k=>k.cid===c.id&&k.ref===mm.ano+'-'+mm.mes);
+    tv+=d.vend||0; tr_+=d.reun||0;
+    h+=`<tr><td style="font-weight:600">${mm.label}</td><td>${rs(d.meta)}</td><td class="pc" style="color:var(--vermelho)">${rs(d.vend)}</td><td class="pc" style="color:${corPct(p)}">${d.meta>0?pct(p):'–'}</td>
+      <td class="pc" style="color:var(--ok)">${rs(d.vend*COMISSAO)}</td><td class="sep pc">${d.reun||0}</td><td class="pc">${ns||'–'}</td><td>${xm?'<span class="st ok">feito</span>':'<span class="fal">–</span>'}</td></tr>`; });
+  h+=`<tr class="total"><td>Total no painel</td><td></td><td style="color:var(--vermelho)">${rs(tv)}</td><td></td><td style="color:var(--ok)">${rs(tv*COMISSAO)}</td><td class="sep">${tr_}</td><td>${S.x1s.filter(k=>k.cid===c.id).length}</td><td>${S.x1m.filter(k=>k.cid===c.id).length}</td></tr>`;
+  $('corpoFicha').innerHTML=h;
+  const itens=[
+    ...S.x1m.filter(k=>k.cid===c.id).map(k=>{ const mm=mmPorRef(k.ref); const cb=k.comb.filter(a=>a.t.trim()); return {d:k.data,h:`<b>X1 do mês · ${mm?mm.label:''}</b> · ${dataBR(k.data)}${k.leitura?' · leitura: meta '+k.leitura:''} · combinados ${cb.filter(a=>a.ok).length}/${cb.length}${k.auto.chegar.trim()?'<br>Onde quer chegar: '+esc(k.auto.chegar.trim()):''}`}; }),
+    ...S.x1s.filter(k=>k.cid===c.id).map(k=>{ const cb=k.comb.filter(a=>a.t.trim()); return {d:k.data,h:`<b>X1 semanal</b> · ${dataBR(k.data)} · combinados ${cb.filter(a=>a.ok).length}/${cb.length}${k.trava.trim()?'<br>Travando: '+esc(k.trava.trim()):''}`}; }),
+    ...S.x1.filter(k=>k.cid===c.id).map(k=>{ const t=(k.acoes||[]).filter(a=>(a.t||'').trim()); return {d:(k.criado||'').slice(0,10),h:`<b>X1 (painel antigo)</b> · ${dataBR(k.criado)}${k.nota!==''&&k.nota!=null?' · nota dele '+k.nota+'/10':''} · combinados ${t.filter(a=>a.ok).length}/${t.length}`}; })
+  ].sort((a,b)=>String(b.d).localeCompare(String(a.d)));
+  $('fichaHist').innerHTML=itens.length?itens.map(i=>`<div>${i.h}</div>`).join(''):'<div>Nenhum X1 registrado ainda.</div>';
+}
+
+/* ---------- BACKUP ---------- */
+function baixarBackup(){
+  const b=new Blob([JSON.stringify(Object.assign({gerado:new Date().toISOString()},S),null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='painel-equipe-'+isoDia(new Date())+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function restaurarBackup(input){
+  const f=input.files[0]; if(!f) return; const l=new FileReader();
+  l.onload=e=>{ try{ const s=JSON.parse(e.target.result); if(!s.consultores||!s.meses) throw 0;
+      if(!confirm('Restaurar o backup? Os dados atuais deste navegador são substituídos.')) return;
+      S=migrar(s); semDados=false; definirFotoGestor(S.fotoGestor); salvar(); tudo();
+    }catch(err){ alert('Não consegui ler esse arquivo. Usa um backup gerado pelo painel.'); } input.value=''; };
+  l.readAsText(f);
+}
+
+/* ---------- IMAGEM PRO GRUPO ---------- */
+async function gerarImagem(){
+  try{ await Promise.all(['700 40px Poppins','600 20px Poppins','400 20px Poppins','300 20px Poppins'].map(f=>document.fonts.load(f))); }catch(e){}
+  const mm=mesAtivo(), t=calcTime(), di=infoMes(), pl=plano(mm), lista=todos();
+  const L=1080, PAD=64, CW=L-PAD*2, F=(w,p)=>`${w} ${p}px Poppins, Arial, sans-serif`;
+  const pT=t.meta>0?t.vend/t.meta*100:0, falta=Math.max(t.meta-t.vend,0), prior=pl.prior.filter(p=>p.t.trim()).slice(0,3);
+  const H=670+34+lista.length*74+30+(prior.length?80+prior.length*52+30:0)+130;
+  const cv=document.createElement('canvas'); cv.width=L; cv.height=H; const x=cv.getContext('2d');
+  const txt=(s,px,py,font,cor,al)=>{ x.font=font; x.fillStyle=cor; x.textAlign=al||'left'; x.fillText(s,px,py); x.textAlign='left'; };
+  const espaco=(s,n)=>s.split('').join(String.fromCharCode(8202).repeat(n||2));
+  x.fillStyle=C.cinza; x.fillRect(0,0,L,H);
+  // topo
+  const gr=x.createLinearGradient(0,0,L,330); gr.addColorStop(0,C.preto); gr.addColorStop(.6,C.vinho); gr.addColorStop(1,'#7A1512');
+  x.fillStyle=gr; x.fillRect(0,0,L,330);
+  txt(mm?String(mm.mes+1).padStart(2,'0'):'',L+30,360,F(700,380),'rgba(255,255,255,.05)','right');
+  x.fillStyle=C.vermelho; x.fillRect(PAD,92,48,5);
+  txt(espaco('EQUIPE · META X REALIZADO',1),PAD+66,102,F(400,20),'rgba(255,255,255,.85)');
+  txt(mm?mm.label:'',PAD,200,F(700,82),'#fff');
+  txt(di.situacao==='corrente'?di.restantes+(di.restantes===1?' dia útil pra virar o mês':' dias úteis pra virar o mês'):(di.situacao==='fechado'?'Mês fechado':'Mês começando'),PAD,256,F(300,28),'rgba(255,255,255,.85)');
+  // numeros do time
+  let y=370;
+  const bloco=(rot,val,cor,px,py,w)=>{ x.fillStyle='#fff'; x.strokeStyle=C.linha; x.lineWidth=2; x.beginPath(); x.roundRect(px,py,w,118,14); x.fill(); x.stroke();
+    x.fillStyle=C.vermelho; x.beginPath(); x.roundRect(px,py,w,8,[14,14,0,0]); x.fill();
+    txt(espaco(rot.toUpperCase(),1),px+24,py+48,F(600,15),C.txt3); txt(val,px+24,py+96,F(700,36),cor); };
+  const w2=(CW-18)/2;
+  bloco('Meta do time',rs(t.meta),C.preto,PAD,y,w2); bloco('Realizado',rs(t.vend),C.vermelho,PAD+w2+18,y,w2);
+  y+=136;
+  const w3=(CW-36)/3;
+  bloco('% da meta',t.meta>0?pct(pT):'–',corPct(pT),PAD,y,w3); bloco(falta<=0&&t.meta>0?'Meta':'Falta',t.meta>0?(falta<=0?'batida 🔥':'R$ '+curto(falta)):'–',falta<=0&&t.meta>0?C.ok:C.preto,PAD+w3+18,y,w3);
+  bloco('Comissão do time',rs(t.com),C.ok,PAD+(w3+18)*2,y,w3);
+  y+=164;
+  // por consultor
+  x.fillStyle=C.vermelho; x.fillRect(PAD,y,36,4); txt(espaco('POR CONSULTOR',1),PAD+52,y+7,F(600,18),C.preto);
+  txt('META',L-PAD-360,y+7,F(600,14),C.txt3,'right'); txt('REALIZADO',L-PAD-150,y+7,F(600,14),C.txt3,'right'); txt('%',L-PAD,y+7,F(600,14),C.txt3,'right');
+  y+=34;
+  lista.forEach((c,i)=>{
+    const d=dado(mm,c.id), p=d.meta>0?d.vend/d.meta*100:0, ly=y+i*74;
+    x.fillStyle=c.tipo==='gestor'?C.rosa:'#fff'; x.beginPath(); x.roundRect(PAD,ly,CW,64,10); x.fill();
+    txt(c.nome+(c.tipo==='gestor'?'  · gestor':''),PAD+22,ly+30,F(600,24),C.preto);
+    x.fillStyle=c.tipo==='gestor'?'#fff':C.rosa; x.fillRect(PAD+22,ly+44,300,7); x.fillStyle=corPct(p)===C.preto?C.vermelho:corPct(p); x.fillRect(PAD+22,ly+44,300*Math.min(p,100)/100,7);
+    txt(d.meta>0?curto(d.meta):'–',L-PAD-360,ly+41,F(400,22),C.txt2,'right');
+    txt(d.vend>0?curto(d.vend):'–',L-PAD-150,ly+41,F(700,24),d.vend>0?C.vermelho:C.txt3,'right');
+    txt(d.meta>0?pct(p):'–',L-PAD-22,ly+41,F(700,24),corPct(p),'right');
+  });
+  y+=lista.length*74+30;
+  if(prior.length){
+    x.fillStyle=C.preto; x.beginPath(); x.roundRect(PAD,y,CW,80+prior.length*52,14); x.fill();
+    x.fillStyle=C.vermelho; x.fillRect(PAD+28,y+40,36,4); txt(espaco('PRIORIDADES DO MÊS',1),PAD+80,y+47,F(600,18),'#fff');
+    prior.forEach((p,i)=>{ txt(String(i+1).padStart(2,'0'),PAD+28,y+104+i*52,F(700,26),C.vermelhoCl);
+      let s=p.t.trim(); x.font=F(500,24); while(x.measureText(s).width>CW-130&&s.length>3) s=s.slice(0,-2); if(s!==p.t.trim()) s=s.trim()+'…';
+      txt(s,PAD+84,y+104+i*52,F(500,24),'#fff'); });
+    y+=80+prior.length*52+30;
+  }
+  // rodape
+  y=H-110; x.strokeStyle='#D9D3D3'; x.lineWidth=1; x.beginPath(); x.moveTo(PAD,y); x.lineTo(L-PAD,y); x.stroke();
+  let xa=PAD;
+  if(fotoGestorImg&&fotoGestorImg.complete&&fotoGestorImg.naturalWidth){ const r=30,cx=PAD+r,cy=y+52;
+    x.save(); x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.clip(); x.drawImage(fotoGestorImg,cx-r,cy-r,r*2,r*2); x.restore();
+    x.strokeStyle=C.vermelho; x.lineWidth=3; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.stroke(); xa=PAD+r*2+18; }
+  txt('Hendril Leal · Gestor Ademicon',xa,y+50,F(600,20),C.preto); txt('@hendrilleal_ademicon',xa,y+78,F(300,18),C.txt2);
+  txt('Meta não se cobra no fim do mês.',L-PAD,y+50,F(300,18),C.txt2,'right'); txt('Se acompanha durante.',L-PAD,y+78,F(600,18),C.preto,'right');
+  const a=document.createElement('a'); a.download='equipe-'+(mm?mm.label.toLowerCase().replace(/\s+/g,'-'):'mes')+'.png'; a.href=cv.toDataURL('image/png'); a.click();
+}
+
+/* ---------- DIÁRIO DO TIME (app dos consultores, dados no Supabase) ---------- */
+/* ---------- DIAGNÓSTICO: onde os números mostram que pode estar travando (igual no app e no painel) ---------- */
+const DIAG_METAS_PADRAO={abord_dia:100,lig_dia:0,follow_dia:0,reun_sem:0,pct_min:70};
+function diagPct(a,b){ return b>0?Math.round(a/b*100)+'%':'0%'; }
+function diagN(n){ return String(Math.round(n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+/* t = somas do período (só seg a sex), m = metas do consultor, nLanc = dias lançados, nUteis = dias úteis do período até hoje */
+function diagnostico(t,m,nLanc,nUteis){
+  m=Object.assign({},DIAG_METAS_PADRAO,m||{});
+  const r=[], ok=[];
+  if(nLanc<2) return {r,ok,pouco:true};
+  const lim=(m.pct_min||70)/100, md=t.ab/nLanc, lig=t.ligacoes/nLanc, fol=t.followups/nLanc, semanas=Math.max(nUteis/5,1);
+  // volume
+  if(m.abord_dia&&md<m.abord_dia*lim) r.push({g:2,k:'volume',t:'Volume abaixo da meta',d:`Média de ${diagN(md)} abordagens por dia, e a tua meta é ${diagN(m.abord_dia)}. Sem volume o funil não enche.`});
+  // abordagem → resposta
+  if(t.ab>=150&&t.respostas/t.ab<0.10) r.push({g:2,k:'resposta',t:'Muita mensagem e pouca resposta',d:`Só ${diagPct(t.respostas,t.ab)} das abordagens tiveram resposta (${diagN(t.respostas)} de ${diagN(t.ab)}). A mensagem de abertura ou a lista podem estar travando.`});
+  // resposta → interessado
+  if(t.respostas>=10&&t.interessados/t.respostas<0.10) r.push({g:2,k:'interesse',t:'Respondem, mas não se interessam',d:`De ${diagN(t.respostas)} respostas, ${diagN(t.interessados)} viraram interessado. Pode ser o jeito de apresentar o consórcio ou o público que tu tá abordando.`});
+  // interessado → simulação
+  if(t.interessados>=3&&t.simulacoes<t.interessados*0.5) r.push({g:1,k:'simulacao',t:'Interessado sem simulação',d:`${diagN(t.interessados)} interessados e ${diagN(t.simulacoes)} simulações enviadas. Quem se interessou tá esperando número.`});
+  // simulação → reunião
+  if(t.simulacoes>=3&&t.reun_agendadas===0) r.push({g:2,k:'reuniao',t:'Simulação que não vira reunião',d:`${diagN(t.simulacoes)} simulações e nenhuma reunião agendada. Falta puxar pro próximo passo depois de mandar a simulação.`});
+  // reunião agendada → feita
+  if(t.reun_agendadas>=2&&t.reun_feitas<t.reun_agendadas*0.5) r.push({g:1,k:'noshow',t:'Reunião marcada que não acontece',d:`${diagN(t.reun_agendadas)} agendadas e ${diagN(t.reun_feitas)} feitas. Confirmar na véspera e sair da conversa com dia e hora fechados ajuda.`});
+  // reunião → fechamento
+  if(t.reun_feitas>=3&&t.fech_qtd===0) r.push({g:1,k:'fechamento',t:'Reunião sem fechamento',d:`${diagN(t.reun_feitas)} reuniões feitas e nenhum fechamento. Vale olhar como tá a condução e o fechamento da reunião.`});
+  // follow-up
+  if(m.follow_dia&&fol<m.follow_dia*lim) r.push({g:1,k:'followup',t:'Follow-up abaixo da meta',d:`Média de ${diagN(fol)} follow-ups por dia, e a tua meta é ${diagN(m.follow_dia)}. Quem respondeu e esfriou precisa de retorno.`});
+  else if(!m.follow_dia&&t.respostas>=10&&t.followups<t.respostas*0.3) r.push({g:1,k:'followup',t:'Pouco follow-up',d:`${diagN(t.respostas)} respostas e ${diagN(t.followups)} follow-ups. Quem respondeu e esfriou precisa de retorno.`});
+  // ligação
+  if(m.lig_dia&&lig<m.lig_dia*lim) r.push({g:1,k:'ligacao',t:'Ligações abaixo da meta',d:`Média de ${String(Math.round(lig*10)/10).replace('.',',')} ligações por dia, e a tua meta é ${diagN(m.lig_dia)}.`});
+  else if(!m.lig_dia&&t.ligacoes===0&&nLanc>=3) r.push({g:1,k:'ligacao',t:'Nenhuma ligação',d:'A ligação ainda não entrou na tua rotina. É uma tarefa pra melhorar.'});
+  if(t.ligacoes>=10&&t.lig_atendidas/t.ligacoes<0.2) r.push({g:1,k:'atendidas',t:'Pouca ligação atendida',d:`${diagN(t.lig_atendidas)} de ${diagN(t.ligacoes)} ligações atendidas. Testa outros horários.`});
+  // reuniões por semana
+  if(m.reun_sem&&t.reun_agendadas<m.reun_sem*semanas*lim) r.push({g:1,k:'reun_meta',t:'Reuniões abaixo da meta',d:`${diagN(t.reun_agendadas)} reuniões agendadas no período, e a tua meta é ${diagN(m.reun_sem)} por semana.`});
+  // o que tá funcionando
+  if(m.abord_dia&&md>=m.abord_dia) ok.push(`Volume em dia: média de ${diagN(md)} abordagens por dia`);
+  if(t.ab>=100&&t.respostas/t.ab>=0.2) ok.push(`Boa taxa de resposta: ${diagPct(t.respostas,t.ab)}`);
+  if(t.respostas>=10&&t.interessados/t.respostas>=0.2) ok.push(`${diagPct(t.interessados,t.respostas)} de quem respondeu ficou interessado`);
+  if(t.reun_feitas>0&&t.reun_feitas>=t.reun_agendadas*0.8) ok.push('Reunião marcada tá acontecendo');
+  if(t.fech_qtd>0) ok.push(`${diagN(t.fech_qtd)} ${t.fech_qtd===1?'fechamento':'fechamentos'} no período`);
+  if(nUteis>=3&&nLanc>=nUteis) ok.push('Lançou todos os dias');
+  r.sort((a,b)=>b.g-a.g);
+  return {r,ok};
+}
+
+const NUVEM={url:'https://xmlgexqrzukthwppixmq.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbGdleHFyenVrdGh3cHBpeG1xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxMDA0NjIsImV4cCI6MjEwMDY3NjQ2Mn0.SpQtRphf01MX4phG9nK1lgbVkcMmmbSkt3UTQXKyIgI',app:'https://hendrilleal-collab.github.io/diario-time/'};
+const DCAMPOS=['whats','insta','messenger','ligacoes','lig_atendidas','respostas','interessados','followups','simulacoes','reun_agendadas','reun_feitas','fech_qtd'];
+const DSEM=['dom','seg','ter','qua','qui','sex','sáb'];
+let DIA={rows:[],cons:[],metas:{abord_dia:100,pct_min:70,dias_sem_lancar:2},quando:null,erro:null,carregando:false};
+let diaPer='semana', diaFoco='time';
+try{ const c=JSON.parse(localStorage.getItem('painel_diario_cache')||'null'); if(c&&c.rows) DIA=Object.assign(DIA,c,{erro:null,carregando:false}); }catch(e){}
+
+const dHoje=()=>isoDia(hojeZero());
+function dData(s){ const [a,m,d]=s.split('-').map(Number); return new Date(a,m-1,d); }
+function dSoma(s,n){ const d=dData(s); d.setDate(d.getDate()+n); return isoDia(d); }
+const dUtil=s=>{ const w=dData(s).getDay(); return w>0&&w<6; };
+const dAb=l=>(l.whats||0)+(l.insta||0)+(l.messenger||0);
+const dFmt=n=>milhar(Math.round(n||0));
+const dPct=(a,b)=>b>0?Math.round(a/b*100)+'%':'–';
+function chaveNuvem(){ return lerChaveLocal()||(S&&S.nuvem&&S.nuvem.chave)||''; }
+function liberado(cid){ return DIA.cons.find(x=>x.id===cid&&x.ativo&&x.tem_pin)||null; }
+function linhas(cid,de,ate){ return DIA.rows.filter(l=>l.consultor_id===cid&&l.dia>=de&&l.dia<=ate&&dUtil(l.dia)); }
+function metasDe(cid){ const r=DIA.cons.find(x=>x.id===cid); return Object.assign({},DIAG_METAS_PADRAO,{abord_dia:DIA.metas.abord_dia||100,pct_min:DIA.metas.pct_min||70},(r&&r.metas)||{}); }
+function linhaDia(cid,s){ return DIA.rows.find(l=>l.consultor_id===cid&&l.dia===s)||null; }
+function dSomar(ls){ const t={n:ls.length,fech_valor:0}; DCAMPOS.forEach(k=>t[k]=0); ls.forEach(l=>{ DCAMPOS.forEach(k=>t[k]+=l[k]||0); t.fech_valor+=Number(l.fech_valor)||0; }); t.ab=t.whats+t.insta+t.messenger; return t; }
+
+async function nuvem(fn,args){
+  const h={'Content-Type':'application/json',apikey:NUVEM.key};
+  if(NUVEM.key.split('.').length===3) h.Authorization='Bearer '+NUVEM.key;
+  const r=await fetch(NUVEM.url+'/rest/v1/rpc/'+fn,{method:'POST',headers:h,body:JSON.stringify(args||{})});
+  const t=await r.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(e){ j=t; }
+  if(!r.ok) throw new Error((j&&j.message)||('erro '+r.status));
+  return j;
+}
+async function buscarDiario(silencioso){
+  if(DIA.carregando) return; DIA.carregando=true; if(!silencioso) renderDiario();
+  try{
+    const ch=chaveNuvem(), h=dHoje(), d=dData(h), de=isoDia(new Date(d.getFullYear(),d.getMonth()-2,1));
+    const [ok,cons,rows]=await Promise.all([nuvem('g_ok',{p_chave:ch}),nuvem('g_consultores',{p_chave:ch}),nuvem('g_lancamentos',{p_chave:ch,p_de:de,p_ate:h})]);
+    DIA.metas=Object.assign(DIA.metas,ok.metas||{}); DIA.cons=cons||[]; DIA.rows=rows||[]; DIA.quando=new Date().toISOString(); DIA.erro=null;
+    try{ localStorage.setItem('painel_diario_cache',JSON.stringify({rows:DIA.rows,cons:DIA.cons,metas:DIA.metas,quando:DIA.quando})); }catch(e){}
+  }catch(e){ DIA.erro=String(e.message||e).includes('chave_invalida')?'chave':'rede'; }
+  DIA.carregando=false; tudo();
+}
+
+/* ---------- alerta de X1 ---------- */
+function alertaX1(cid){
+  const m=DIA.metas, h=dHoje(), lib=liberado(cid);
+  if(!lib) return {st:'fora',motivos:[],uteis:[]};
+  const ini=lib.criado?String(lib.criado).slice(0,10):'', uteis=[]; let s=dSoma(h,-1);
+  while(uteis.length<5){ if(dUtil(s)) uteis.push(s); s=dSoma(s,-1); }
+  for(let i=uteis.length-1;i>=0;i--) if(uteis[i]<ini) uteis.splice(i,1); // só conta a partir do dia que liberou o app
+  const motivos=[]; let sem=0; for(const u of uteis){ if(!linhaDia(cid,u)) sem++; else break; }
+  if(sem>=(m.dias_sem_lancar||2)) motivos.push({g:2,t:sem+' dias úteis seguidos sem lançar'});
+  const ls=uteis.map(u=>linhaDia(cid,u)).filter(Boolean), t=dSomar(ls), dg=diagnostico(t,metasDe(cid),ls.length,uteis.length);
+  dg.r.forEach(x=>motivos.push({g:x.g,t:x.t,d:x.d}));
+  const ultX1=S.x1s.filter(k=>k.cid===cid).sort((a,b)=>b.data.localeCompare(a.data))[0], dx=ultX1?diasDesde(ultX1.data):null;
+  let st=motivos.some(x=>x.g===2)||motivos.length>=3?'x1':motivos.length?'olho':'ok';
+  if(st!=='ok'&&dx!=null&&dx<=2) st='feito';
+  if(st==='ok'&&uteis.length<2) st='novo';
+  return {st,motivos,dx,uteis,lancados:ls.length,dg};
+}
+const ST_X1={x1:['no','Precisa de X1'],olho:['ne','Fica de olho'],ok:['ok','Tudo certo'],feito:['ok','X1 já feito'],fora:['ne','Sem o app'],novo:['ne','Começando']};
+function nX1Pendentes(){ return time().filter(c=>alertaX1(c.id).st==='x1').length; }
+function x1Agora(cid){ x1tab='sem'; x1filtro=cid; novoX1S(cid); irPara('x1'); }
+function anotarMotivos(cid){
+  const a=alertaX1(cid), p=pautaDe(cid); let n=0;
+  a.motivos.forEach(m=>{ const t='Diário: '+m.t+(m.d?'. '+m.d:''); if(!p.some(x=>!x.ok&&x.t===t)){ p.push({t,ok:false,criado:new Date().toISOString(),feito:''}); n++; } });
+  salvar(); renderDiario(); renderX1();
+  alert(n?n+(n===1?' motivo foi':' motivos foram')+' pras tuas anotações do X1 dele.':'Esses motivos já estão nas tuas anotações.');
+}
+
+/* ---------- períodos ---------- */
+function dIntervalo(p){
+  const h=dData(dHoje());
+  if(p==='semana'||p==='passada'){ const seg=new Date(h); seg.setDate(h.getDate()-((h.getDay()+6)%7)-(p==='passada'?7:0)); const sex=new Date(seg); sex.setDate(seg.getDate()+4);
+    return {de:isoDia(seg),ate:isoDia(sex),fim:p==='passada'?isoDia(sex):(dHoje()<isoDia(sex)?dHoje():isoDia(sex)),rot:(p==='semana'?'esta semana':'semana passada')+' · seg a sex'}; }
+  const k=p==='mespass'?1:0, ini=new Date(h.getFullYear(),h.getMonth()-k,1), fim=new Date(h.getFullYear(),h.getMonth()-k+1,0);
+  return {de:isoDia(ini),ate:isoDia(fim),fim:k?isoDia(fim):dHoje(),rot:MESES_PT[ini.getMonth()].toLowerCase()+' · dias úteis'};
+}
+function dDias(de,ate){ const r=[]; for(let s=de;s<=ate;s=dSoma(s,1)) if(dUtil(s)) r.push(s); return r; }
+const dUteisAte=(iv)=>dDias(iv.de,iv.ate).filter(s=>s<=iv.fim);
+
+/* ---------- gráficos ---------- */
+function dTip(box){
+  let tip=box.querySelector('.dtip'); if(!tip){ tip=document.createElement('div'); tip.className='dtip'; box.appendChild(tip); }
+  const show=e=>{ const el=e.target.closest('[data-tip]'); if(!el){ tip.classList.remove('on'); return; }
+    const br=box.getBoundingClientRect(), er=el.getBoundingClientRect();
+    tip.innerHTML=el.dataset.tip; tip.style.left=Math.min(Math.max(er.left+er.width/2-br.left,70),br.width-70)+'px'; tip.style.top=(er.top-br.top)+'px'; tip.classList.add('on'); };
+  box.onpointerover=show; box.onclick=show; box.onpointerleave=()=>tip.classList.remove('on');
+}
+function dEscala(max){ const ps=[5,10,20,25,50,100,150,200,250,500,1000,2000]; const p=ps.find(x=>x>=max/4)||Math.ceil(max/4000)*1000; return {p,top:Math.max(p*Math.ceil(max/p),p)}; }
+function grafAbord(box,cid,iv,alto){
+  const dias=dDias(iv.de,iv.ate), meta=metasDe(cid).abord_dia, vals=dias.map(s=>{ const l=linhaDia(cid,s); return l?dAb(l):null; });
+  const W=alto?640:320,H=alto?220:150,L=32,R=8,T=16,B=22, e=dEscala(Math.max(meta,...vals.map(v=>v||0))*1.05), y=v=>T+(H-T-B)*(1-v/e.top);
+  const n=dias.length, bw=(W-L-R)/n, bar=Math.min(24,bw*.62);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Abordagens por dia">`;
+  for(let v=0;v<=e.top;v+=e.p) s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#EFEBEB"/><text class="eixo" x="${L-6}" y="${y(v)+3}" text-anchor="end">${v>=1000?v/1000+'K':v}</text>`;
+  dias.forEach((d,i)=>{ const v=vals[i], x=L+bw*i+(bw-bar)/2, dt=dData(d);
+    if(v){ const top=y(v), r=Math.min(4,y(0)-top); s+=`<path d="M${x},${y(0)} V${top+r} Q${x},${top} ${x+r},${top} H${x+bar-r} Q${x+bar},${top} ${x+bar},${top+r} V${y(0)} Z" fill="${v>=meta?C.vermelho:C.vermelhoCl}"/>`; }
+    else if(d<=iv.fim) s+=`<circle cx="${x+bar/2}" cy="${y(0)-5}" r="2.5" fill="${C.txt3}"/>`;
+    s+=`<rect x="${L+bw*i}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="<b>${DSEM[dt.getDay()]} ${dt.getDate()}/${dt.getMonth()+1}</b><br>${v==null?(d>iv.fim?'ainda não chegou':'não lançado'):dFmt(v)+' abordagens'}"/>`;
+    if(n<=8||dt.getDay()===1) s+=`<text class="eixo" x="${L+bw*i+bw/2}" y="${H-6}" text-anchor="middle">${n<=8?DSEM[dt.getDay()]:dt.getDate()}</text>`;
+  });
+  s+=`<line x1="${L}" x2="${W-R}" y1="${y(meta)}" y2="${y(meta)}" stroke="${C.preto}" stroke-width="1.5"/><text class="rot" x="${W-R}" y="${y(meta)-5}" text-anchor="end">meta ${dFmt(meta)}</text>`;
+  s+=`<line x1="${L}" x2="${W-R}" y1="${y(0)}" y2="${y(0)}" stroke="#CFC9C9"/></svg>`;
+  box.innerHTML=s; dTip(box);
+}
+function grafFunil(box,t){
+  const et=[['Abordagens',t.ab],['Respostas',t.respostas],['Interessados',t.interessados],['Simulações',t.simulacoes],['Reuniões agendadas',t.reun_agendadas],['Reuniões feitas',t.reun_feitas],['Fechamentos',t.fech_qtd]];
+  const W=520,rowH=36,L=140,R=110,H=et.length*rowH, max=Math.max(et[0][1],1);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Funil">`;
+  et.forEach(([n,v],i)=>{ const y=i*rowH+8, bh=20, w=Math.max((W-L-R)*v/max,v>0?3:0), r=Math.min(4,w), conv=i>0?dPct(v,et[i-1][1]):'';
+    s+=`<text class="rot2" x="0" y="${y+14}">${n}</text><rect x="${L}" y="${y}" width="${W-L-R}" height="${bh}" rx="4" fill="${C.rosa}"/>`;
+    if(w>0) s+=`<path d="M${L},${y} H${L+w-r} Q${L+w},${y} ${L+w},${y+r} V${y+bh-r} Q${L+w},${y+bh} ${L+w-r},${y+bh} H${L} Z" fill="${C.vermelho}"/>`;
+    s+=`<text class="rot" x="${W-R+8}" y="${y+14}">${dFmt(v)}</text>${i>0?`<text class="eixo" x="${W}" y="${y+14}" text-anchor="end">${conv}</text>`:''}`;
+    s+=`<rect x="0" y="${i*rowH}" width="${W}" height="${rowH}" fill="transparent" data-tip="<b>${n}: ${dFmt(v)}</b>${i>0?'<br>'+conv+' de '+et[i-1][0].toLowerCase():''}"/>`;
+  });
+  box.innerHTML=s+'</svg><div class="legenda" style="margin-top:6px">O % na ponta é quanto passou da etapa anterior pra essa.</div>'; dTip(box);
+}
+function grafCanal(box,t){
+  const cs=[['WhatsApp',t.whats,'#2a78d6'],['Instagram',t.insta,'#eb6834'],['Messenger',t.messenger,'#1baf7a']], tot=t.ab;
+  if(!tot){ box.innerHTML='<div class="legenda">Sem abordagens no período.</div>'; return; }
+  const W=520,H=24, vis=cs.filter(c=>c[1]>0); let x=0, s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Abordagens por canal">`;
+  vis.forEach((c,i)=>{ const w=W*c[1]/tot-(i<vis.length-1?2:0); s+=`<rect x="${x}" y="0" width="${Math.max(w,1)}" height="${H}" fill="${c[2]}" data-tip="<b>${c[0]}</b><br>${dFmt(c[1])} · ${dPct(c[1],tot)}"/>`; x+=w+2; });
+  box.innerHTML=s+`</svg><div class="dleg">${cs.map(c=>`<span><i style="background:${c[2]}"></i>${c[0]} <b>${dFmt(c[1])}</b> (${dPct(c[1],tot)})</span>`).join('')}</div>`; dTip(box);
+}
+
+/* ---------- render da aba ---------- */
+function renderDiario(){
+  const nb=document.querySelector('#nav button[data-p="diario"]'), np=nX1Pendentes();
+  if(nb) nb.innerHTML='Diário do time'+(np?` <span class="nav-bolha">${np}</span>`:'');
+  const el=$('pag-diario'); if(!el) return;
+  const iv=dIntervalo(diaPer), uteis=dUteisAte(iv), lista=time();
+  const quando=DIA.quando?new Date(DIA.quando).toLocaleTimeString('pt-BR').slice(0,5):null;
+  let h=`<div class="dbarra"><div><b>${DIA.carregando?'Atualizando…':DIA.erro==='chave'?'Chave do painel não confere':DIA.erro?'Sem conexão agora':'Conectado ao app dos consultores'}</b>
+      <span>${DIA.erro==='chave'?'Confere a chave em Acesso ao app, lá embaixo.':DIA.erro?(quando?'Mostrando os dados de '+dataBR(DIA.quando)+' às '+quando+'.':'Sem dados salvos ainda.'):quando?'Atualizado às '+quando:''}</span></div>
+      <button class="mini" onclick="buscarDiario()">Atualizar</button></div>`;
+  // alerta X1
+  h+=`<div class="titulo">Precisa de X1? <span>últimos 5 dias úteis</span></div><div class="dalertas">${lista.map(c=>{
+      const a=alertaX1(c.id), st=ST_X1[a.st];
+      return `<div class="dal ${a.st}"><div class="dal-cab"><span class="ini">${iniciais(c.nome)}</span><div style="flex:1"><div class="ag-nome">${esc(c.nome)}</div>
+          <div class="ag-sit">${a.st==='fora'?'Ainda sem acesso ao app':a.st==='novo'?'Começou a usar o app agora':a.lancados+' de '+a.uteis.length+' dias lançados'+(a.dx!=null?' · último X1 há '+a.dx+(a.dx===1?' dia':' dias'):'')}</div></div><span class="st ${st[0]}">${st[1]}</span></div>
+        ${a.motivos.length?`<ul class="dal-mot">${a.motivos.map(m=>`<li class="${m.g===2?'forte':''}" title="${esc(m.d||'')}">${esc(m.t)}</li>`).join('')}</ul>`:a.st==='ok'?'<div class="dal-ok">Lançando em dia e dentro do ritmo.</div>':a.st==='novo'?'<div class="dal-ok">O alerta começa a valer depois de 2 dias úteis usando o app.</div>':''}
+        <div class="dal-ac">${a.st==='fora'?`<button class="mini" onclick="document.getElementById('dAcesso').scrollIntoView({behavior:'smooth'})">Liberar acesso</button>`
+          :`${a.motivos.length?`<button class="mini" onclick="anotarMotivos('${c.id}')">Mandar pras anotações</button>`:''}<button class="mini ${a.st==='x1'?'forte':''}" onclick="x1Agora('${c.id}')">+ X1</button>`}</div></div>`; }).join('')}</div>`;
+  // filtros
+  h+=`<div class="titulo">Números <span>${iv.rot}</span></div>
+    <div class="chips">${[['semana','Esta semana'],['passada','Semana passada'],['mes','Este mês'],['mespass','Mês passado']].map(([k,r])=>`<button class="chip${diaPer===k?' on':''}" onclick="diaPer='${k}';renderDiario()">${r}</button>`).join('')}
+      <span style="width:12px"></span>
+      <button class="chip${diaFoco==='time'?' on':''}" onclick="diaFoco='time';renderDiario()">Time</button>${lista.map(c=>`<button class="chip${diaFoco===c.id?' on':''}" onclick="diaFoco='${c.id}';renderDiario()">${esc(c.nome)}</button>`).join('')}</div>`;
+  if(diaFoco!=='time'&&!porId(diaFoco)) diaFoco='time';
+  const tot=lista.map(c=>({c,ls:linhas(c.id,iv.de,iv.fim)})).map(o=>Object.assign(o,{t:dSomar(o.ls),lu:o.ls.filter(l=>dUtil(l.dia)).length}));
+  if(diaFoco==='time'){
+    h+=`<div class="tab-wrap"><table style="min-width:1080px"><thead><tr class="dnw"><th>Consultor</th><th>Dias lançados</th><th>Abordagens</th><th>Média/dia</th><th>Ligações</th><th>Respostas</th><th>Interessados</th><th>Follow-ups</th><th>Simulações</th><th>Reuniões</th><th>Fechamentos</th><th>Último</th></tr></thead><tbody>
+      ${tot.map(({c,t,lu,ls})=>{ const md=t.n?t.ab/t.n:0, meta=metasDe(c.id).abord_dia, ult=(DIA.cons.find(x=>x.id===c.id)||{}).ultimo;
+        return `<tr class="dnw"><td class="nome-cel" style="cursor:pointer" onclick="diaFoco='${c.id}';renderDiario()">${esc(c.nome)}${badge(c.tipo)}</td>
+          <td><span class="pc" style="color:${lu>=uteis.length?C.ok:lu>=uteis.length-1?C.preto:C.vermelho}">${lu}</span> <span class="fal">/ ${uteis.length}</span></td>
+          <td class="pc">${dFmt(t.ab)}</td><td class="pc" style="color:${!t.n?C.txt3:md>=meta?C.ok:md>=meta*(DIA.metas.pct_min||70)/100?C.preto:C.vermelho}">${t.n?dFmt(md):'–'} <span class="fal" style="font-weight:400">/ ${dFmt(meta)}</span></td>
+          <td>${dFmt(t.ligacoes)} <span class="fal">· ${dFmt(t.lig_atendidas)} atend.</span></td>
+          <td>${dFmt(t.respostas)} <span class="fal">· ${dPct(t.respostas,t.ab)}</span></td>
+          <td>${dFmt(t.interessados)} <span class="fal">· ${dPct(t.interessados,t.respostas)}</span></td>
+          <td>${dFmt(t.followups)}</td><td>${dFmt(t.simulacoes)}</td>
+          <td>${dFmt(t.reun_agendadas)} <span class="fal">ag. · ${dFmt(t.reun_feitas)} feitas</span></td>
+          <td class="pc" style="color:var(--vermelho)">${t.fech_qtd?dFmt(t.fech_qtd)+' · '+rs(t.fech_valor):'–'}</td>
+          <td class="fal">${ult?dataBR(ult):'nunca'}</td></tr>`; }).join('')}
+      ${(()=>{ const T=dSomar(tot.flatMap(o=>o.ls)); return `<tr class="total"><td>Time</td><td></td><td>${dFmt(T.ab)}</td><td>${T.n?dFmt(T.ab/T.n):'–'}</td><td>${dFmt(T.ligacoes)}</td><td>${dFmt(T.respostas)} · ${dPct(T.respostas,T.ab)}</td><td>${dFmt(T.interessados)}</td><td>${dFmt(T.followups)}</td><td>${dFmt(T.simulacoes)}</td><td>${dFmt(T.reun_agendadas)} · ${dFmt(T.reun_feitas)}</td><td style="color:var(--vermelho)">${T.fech_qtd?dFmt(T.fech_qtd)+' · '+rs(T.fech_valor):'–'}</td><td></td></tr>`; })()}
+      </tbody></table></div><div class="legenda">Só segunda a sexta. Média por dia lançado contra a meta de cada um: verde bateu, vermelho ficou abaixo de ${DIA.metas.pct_min}% dela. Clica no nome pra abrir os números dele.</div>`;
+    h+=`<div class="titulo">Abordagens por dia <span>cada um com a sua escala de dias</span></div><div class="dmult">${lista.map(c=>`<div class="bloco"><div class="ag-nome" style="margin-bottom:6px">${esc(c.nome)}</div><div class="dgraf" id="dg-${c.id}"></div></div>`).join('')}</div>`;
+    h+=`<div class="dois" style="margin-top:14px"><div><div class="titulo" style="margin-top:20px">Funil do time</div><div class="bloco"><div class="dgraf" id="dgFunil"></div></div></div>
+        <div><div class="titulo" style="margin-top:20px">Por canal</div><div class="bloco"><div class="dgraf" id="dgCanal"></div></div></div></div>`;
+  } else {
+    const o=tot.find(x=>x.c.id===diaFoco), c=o.c, t=o.t, md=t.n?t.ab/t.n:0, mt=metasDe(c.id), dg=diagnostico(t,mt,o.lu,uteis.length);
+    h+=`<div class="ddiag"><div class="ddiag-cab"><b>O que o painel tá vendo · ${esc(c.nome)}</b><span>${liberado(c.id)?'Ele vê essa mesma leitura no app, com o aviso pra conversar contigo.':'Aparece no app dele quando liberar o acesso.'}</span></div>
+      ${dg.pouco?'<div class="dal-ok">Precisa de pelo menos 2 dias lançados no período pra leitura.</div>'
+        :(dg.r.length?`<div class="ddiag-lista">${dg.r.map(x=>`<div class="ddg g${x.g}"><span>!</span><div><b>${esc(x.t)}</b><p>${esc(x.d)}</p></div></div>`).join('')}</div>`:'<div class="dal-ok">Nada travando no período.</div>')
+        +(dg.ok.length?`<div class="ddiag-ok"><b>O que tá funcionando:</b> ${dg.ok.map(esc).join(' · ')}</div>`:'')}</div>`;
+    h+=`<div class="grade">
+      <div class="card escuro"><div class="rot">Abordagens</div><div class="val">${dFmt(t.ab)}</div><div class="pe">média ${dFmt(md)}/dia lançado · meta ${dFmt(mt.abord_dia)}</div></div>
+      <div class="card top"><div class="rot">Taxa de resposta</div><div class="val">${dPct(t.respostas,t.ab)}</div><div class="pe">${dFmt(t.respostas)} respostas · ${dFmt(t.interessados)} interessados</div></div>
+      <div class="card top"><div class="rot">Reuniões</div><div class="val">${dFmt(t.reun_feitas)}</div><div class="pe">feitas · ${dFmt(t.reun_agendadas)} agendadas</div></div>
+      <div class="card top"><div class="rot">Fechamentos</div><div class="val" style="color:var(--vermelho)">${dFmt(t.fech_qtd)}</div><div class="pe">${t.fech_valor?rs(t.fech_valor):'sem valor'}</div></div>
+      <div class="card"><div class="rot">Dias lançados</div><div class="val">${o.lu} <span style="font-size:14px;color:var(--txt3)">/ ${uteis.length}</span></div><div class="pe">dias úteis</div></div>
+      <div class="card"><div class="rot">Ligações</div><div class="val">${dFmt(t.ligacoes)}</div><div class="pe">${dFmt(t.lig_atendidas)} atendidas${mt.lig_dia?' · meta '+mt.lig_dia+'/dia':''}</div></div>
+      <div class="card"><div class="rot">Follow-ups</div><div class="val">${dFmt(t.followups)}</div><div class="pe">${mt.follow_dia?'meta '+mt.follow_dia+'/dia':'no período'}</div></div>
+      <div class="card"><div class="rot">Simulações</div><div class="val">${dFmt(t.simulacoes)}</div><div class="pe">enviadas</div></div></div>`;
+    h+=`<div class="titulo">Abordagens por dia · ${esc(c.nome)}</div><div class="bloco"><div class="dgraf" id="dg-${c.id}"></div></div>`;
+    h+=`<div class="dois" style="margin-top:14px"><div><div class="titulo" style="margin-top:20px">Funil</div><div class="bloco"><div class="dgraf" id="dgFunil"></div></div></div>
+        <div><div class="titulo" style="margin-top:20px">Por canal</div><div class="bloco"><div class="dgraf" id="dgCanal"></div></div></div></div>`;
+    const dias=dDias(iv.de,iv.fim).reverse();
+    h+=`<div class="titulo">Dia a dia · o que ele escreveu</div><div class="tab-wrap"><table style="min-width:900px"><thead><tr><th>Dia</th><th>Abord.</th><th>W / I / M</th><th>Lig.</th><th>Resp.</th><th>Inter.</th><th>Follow</th><th>Simul.</th><th>Reun.</th><th>Fech.</th><th>Faltou fazer</th></tr></thead><tbody>
+      ${dias.map(s=>{ const l=linhaDia(c.id,s), d=dData(s), nm=DSEM[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1);
+        if(!l) return `<tr><td class="fal">${nm}</td><td colspan="10"><span class="st no">não lançou</span></td></tr>`;
+        return `<tr><td style="font-weight:600;white-space:nowrap">${nm}</td><td class="pc">${dFmt(dAb(l))}</td><td class="fal">${l.whats} / ${l.insta} / ${l.messenger}</td><td>${l.ligacoes}<span class="fal"> · ${l.lig_atendidas}</span></td><td>${l.respostas}</td><td>${l.interessados}</td><td>${l.followups}</td><td>${l.simulacoes}</td><td>${l.reun_agendadas}<span class="fal"> · ${l.reun_feitas}</span></td><td class="pc" style="color:var(--vermelho)">${l.fech_qtd?l.fech_qtd+' · '+rs(l.fech_valor):'–'}</td><td style="min-width:220px;font-size:12.5px;white-space:pre-wrap">${esc(l.faltou)||'<span class="fal">–</span>'}</td></tr>`; }).join('')}
+      </tbody></table></div>`;
+  }
+  // metas individuais
+  h+=`<div class="titulo" id="dMetas">Metas de cada um <span>por dia útil, de segunda a sexta</span></div>
+    <div class="sub">Cada consultor com a sua meta. Em branco, abordagens usa o padrão do time (${dFmt(DIA.metas.abord_dia)}) e o resto fica sem meta. Aparece no app dele e entra na leitura do painel.</div>
+    <div class="tab-wrap"><table style="min-width:760px"><thead><tr><th>Consultor</th><th>Abordagens/dia</th><th>Ligações/dia</th><th>Follow-ups/dia</th><th>Reuniões agendadas/semana</th><th></th></tr></thead><tbody>
+    ${lista.map(c=>{ const r=DIA.cons.find(x=>x.id===c.id), m=(r&&r.metas)||{};
+      return `<tr><td class="nome-cel">${esc(c.nome)}</td>${[['abord_dia',DIA.metas.abord_dia],['lig_dia',''],['follow_dia',''],['reun_sem','']].map(([k,ph])=>
+        `<td><input class="inp curto" type="number" min="0" step="1" style="width:96px" id="m-${k}-${c.id}" value="${m[k]||''}" placeholder="${ph}" onchange="salvarMetasCons('${c.id}')"></td>`).join('')}
+        <td class="fal" id="mst-${c.id}"></td></tr>`; }).join('')}
+    </tbody></table></div>`;
+  // acesso
+  const link=NUVEM.app;
+  h+=`<div class="titulo" id="dAcesso">Acesso ao app</div>
+    <div class="sub">Cada consultor entra com o nome e um PIN de 4 números. Eles só veem os números deles, nada do teu painel. Trocar o PIN derruba os aparelhos que já estavam logados.</div>
+    <div class="tab-wrap"><table style="min-width:900px"><thead><tr><th>Consultor</th><th>Situação</th><th>Lembrete 19h</th><th>PIN</th><th></th></tr></thead><tbody>
+    ${lista.map(c=>{ const r=DIA.cons.find(x=>x.id===c.id), lib=r&&r.ativo&&r.tem_pin;
+      return `<tr><td class="nome-cel">${esc(c.nome)}</td>
+        <td>${lib?`<span class="st ok">liberado</span> <span class="fal">${r.sessoes?r.sessoes+(r.sessoes===1?' aparelho':' aparelhos'):'ainda não entrou'}</span>`:'<span class="st ne">sem acesso</span>'}</td>
+        <td>${lib?(r.push?`<span class="st ok">ativo</span> <span class="fal">${r.push} ${r.push===1?'aparelho':'aparelhos'}</span>`:'<span class="st no">desligado</span>'):'<span class="fal">–</span>'}</td>
+        <td style="max-width:150px"><input class="inp curto" id="pin-${c.id}" inputmode="numeric" maxlength="4" placeholder="0000" style="width:90px" oninput="this.value=this.value.replace(/\\D/g,'').slice(0,4)"></td>
+        <td style="white-space:nowrap"><button class="mini forte" onclick="liberarApp('${c.id}')">${lib?'Trocar PIN':'Liberar'}</button>
+          ${lib?`<button class="mini" onclick="mandarAcesso('${c.id}')">Mandar no WhatsApp</button><button class="lixo" title="Tirar acesso" onclick="bloquearApp('${c.id}')">×</button>`:''}</td></tr>`; }).join('')}
+    </tbody></table></div>
+    <div class="dois" style="margin-top:14px">
+      <div class="bloco cfg">
+        <div><label>Abordagens/dia · padrão</label><input type="number" id="dMetaAb" min="1" value="${DIA.metas.abord_dia}"></div>
+        <div><label>% mínimo</label><input type="number" id="dMetaPct" min="1" max="100" value="${DIA.metas.pct_min}"></div>
+        <div><label>Dias sem lançar</label><input type="number" id="dMetaDias" min="1" max="10" value="${DIA.metas.dias_sem_lancar}"></div>
+        <button class="mini forte" onclick="salvarMetasDiario()">Salvar</button>
+        <div class="nota">Regras do alerta de X1. O padrão de abordagens vale pra quem não tem meta própria. O % mínimo é quanto da meta precisa fazer antes do painel apontar.</div>
+      </div>
+      <div class="bloco cfg" style="align-items:stretch;flex-direction:column;gap:10px">
+        <div><label>Link do app</label><div style="display:flex;gap:8px"><input class="inp" readonly value="${esc(link)}" onclick="this.select()"><button class="mini" onclick="copiarTxt('${esc(link)}',this)">Copiar</button></div></div>
+        <div><label>Chave do painel</label><div style="display:flex;gap:8px"><input class="inp" id="dChave" type="password" value="${esc(chaveNuvem())}"><button class="mini" onclick="salvarChave()">Salvar</button></div>
+          <div class="nota" style="margin-top:6px">É o que deixa só o teu painel ver os números de todo mundo. Vai junto no backup.</div></div>
+      </div></div>`;
+  el.innerHTML=h;
+  if(diaFoco==='time'){ lista.forEach(c=>{ const b=$('dg-'+c.id); if(b) grafAbord(b,c.id,iv,false); }); const T=dSomar(tot.flatMap(o=>o.ls)); grafFunil($('dgFunil'),T); grafCanal($('dgCanal'),T); }
+  else { const o=tot.find(x=>x.c.id===diaFoco); grafAbord($('dg-'+diaFoco),diaFoco,iv,true); grafFunil($('dgFunil'),o.t); grafCanal($('dgCanal'),o.t); }
+}
+function copiarTxt(t,b){ const ok=()=>{ const o=b.textContent; b.textContent='Copiado ✓'; setTimeout(()=>b.textContent=o,1500); };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,()=>prompt('Copia:',t)); else prompt('Copia:',t); }
+async function liberarApp(cid){
+  const c=porId(cid), pin=($('pin-'+cid).value||'').trim();
+  if(!/^\d{4}$/.test(pin)){ alert('Digita um PIN de 4 números pro '+c.nome+'.'); $('pin-'+cid).focus(); return; }
+  try{ await nuvem('g_consultor_salvar',{p_chave:chaveNuvem(),p_id:cid,p_nome:c.nome,p_pin:pin});
+    S.nuvem.pins=S.nuvem.pins||{}; S.nuvem.pins[cid]=pin; salvar();
+    await buscarDiario(true); if(confirm('Acesso do '+c.nome+' liberado com o PIN '+pin+'. Mandar o link e o PIN pra ele no WhatsApp agora?')) mandarAcesso(cid);
+  }catch(e){ alert(String(e.message).includes('chave')?'A chave do painel não confere.':'Não consegui salvar agora. Confere a internet.'); }
+}
+function mandarAcesso(cid){
+  const c=porId(cid), pin=(S.nuvem.pins||{})[cid];
+  const txt=`Fala ${c.nome}! A partir de agora o relatório do dia vai pelo app, não precisa mais me mandar no WhatsApp 🙌\n\n1. Abre esse link: ${NUVEM.app}\n2. Coloca na tela do celular:\n   iPhone: abre no Safari, toca em compartilhar ⬆︎ e "Adicionar à Tela de Início"\n   Android: no Chrome, menu ⋮ e "Instalar app"\n3. Entra no teu nome com o PIN *${pin||'(te passo em separado)'}*\n4. Ativa o lembrete das 19h\n\nTodo dia lança teus números lá. Leva 1 minuto. Eu acompanho daqui e a gente analisa junto. Bora!`;
+  abrirModal('Acesso do '+c.nome,txt,linkWa(c,txt));
+}
+async function bloquearApp(cid){
+  const c=porId(cid); if(!confirm('Tirar o acesso do '+c.nome+' ao app? Os lançamentos dele continuam guardados.')) return;
+  try{ await nuvem('g_consultor_bloquear',{p_chave:chaveNuvem(),p_id:cid}); if(S.nuvem.pins) delete S.nuvem.pins[cid]; salvar(); buscarDiario(); }catch(e){ alert('Não consegui agora. Confere a internet.'); }
+}
+async function salvarMetasCons(cid){
+  const c=porId(cid), m={}; ['abord_dia','lig_dia','follow_dia','reun_sem'].forEach(k=>m[k]=parseInt($('m-'+k+'-'+cid).value)||0);
+  const st=$('mst-'+cid); if(st) st.textContent='salvando…';
+  try{ const r=await nuvem('g_consultor_metas',{p_chave:chaveNuvem(),p_id:cid,p_nome:c.nome,p_metas:m});
+    const x=DIA.cons.find(y=>y.id===cid); if(x) x.metas=r; else DIA.cons.push({id:cid,nome:c.nome,ativo:true,tem_pin:false,metas:r});
+    if(st){ st.textContent='salvo ✓'; st.style.color='var(--ok)'; } setTimeout(()=>{ renderDiario(); renderX1(); },700);
+  }catch(e){ if(st){ st.textContent='não salvou'; st.style.color='var(--vermelho)'; } }
+}
+async function salvarMetasDiario(){
+  const m={abord_dia:+$('dMetaAb').value,pct_min:+$('dMetaPct').value,dias_sem_lancar:+$('dMetaDias').value};
+  try{ DIA.metas=await nuvem('g_metas',{p_chave:chaveNuvem(),p_metas:m}); tudo(); }catch(e){ alert('Não consegui salvar agora.'); }
+}
+function salvarChave(){ const v=$('dChave').value.trim(); if(!v) return; gravarChaveLocal(v); S.nuvem.chave=v; salvar(); buscarDiario(); }
+function sincNomeNuvem(cid){ const c=porId(cid); if(c&&liberado(cid)) nuvem('g_consultor_salvar',{p_chave:chaveNuvem(),p_id:cid,p_nome:c.nome,p_pin:null}).then(()=>buscarDiario(true)).catch(()=>{}); }
+
+/* ---------- o diário alimentando as outras áreas ---------- */
+function appMes(cid,mm){ if(!mm||!liberado(cid)) return null; const de=isoDia(new Date(mm.ano,mm.mes,1)), ate=isoDia(fimMes(mm.ano,mm.mes)); const ls=linhas(cid,de,ate); return ls.length?dSomar(ls):null; }
+function dicaVenda(cid){ const mm=mesAtivo(), t=appMes(cid,mm); if(!t||!t.fech_valor) return ''; const d=dado(mm,cid);
+  return Math.round(t.fech_valor)===Math.round(d.vend||0)?`<span class="mini-rot" style="color:var(--ok)">bate com o app ✓</span>`
+    :`<span class="mini-rot">app: ${rs(t.fech_valor)} · <a class="dusar" onclick="usarApp('${cid}','vend')">usar</a></span>`; }
+function dicaReun(cid){ const mm=mesAtivo(), t=appMes(cid,mm); if(!t) return ''; const d=dado(mm,cid);
+  return (d.reun||0)===t.reun_feitas?'':`<span class="mini-rot">app: ${t.reun_feitas} feitas · <a class="dusar" onclick="usarApp('${cid}','reun')">usar</a></span>`; }
+function usarApp(cid,k){ const mm=mesAtivo(), t=appMes(cid,mm); if(!t) return; const d=dado(mm,cid);
+  if(k==='vend') d.vend=Math.round(t.fech_valor); else d.reun=t.reun_feitas; salvar(); tudo(); }
+function numsAppX1(cid,ate,dias,rotulo){
+  if(!liberado(cid)) return '';
+  const de=dSoma(ate,-dias), fimx=dSoma(ate,-1), ls=linhas(cid,de,fimx), t=dSomar(ls), ut=dDias(de,fimx).filter(dUtil).length;
+  const falt=ls.filter(l=>l.faltou&&l.faltou.trim()).slice(-3).reverse(), dg=diagnostico(t,metasDe(cid),ls.length,ut);
+  return `<div class="lembra dapp"><b>${rotulo} · no app</b>
+    <div class="nums" style="margin-top:6px">
+      <div><small>Abordagens</small><b>${dFmt(t.ab)}</b></div><div><small>Respostas</small><b>${dFmt(t.respostas)}</b></div>
+      <div><small>Reuniões</small><b>${t.reun_agendadas}<span class="fal" style="font-weight:400"> ag · ${t.reun_feitas} f</span></b></div><div><small>Lançou</small><b>${ls.filter(l=>dUtil(l.dia)).length}/${ut}</b></div></div>
+    ${dg.r&&dg.r.length?`<div style="margin-top:8px"><span class="fal" style="font-weight:600;color:var(--preto)">O painel apontou pra ele:</span> ${dg.r.map(x=>esc(x.t)).join(' · ')}</div>`:''}
+    ${falt.length?`<div style="margin-top:8px"><span class="fal" style="font-weight:600;color:var(--preto)">Ele escreveu que faltou:</span>${falt.map(l=>`<div style="margin-top:3px">▫️ <span class="fal">${DSEM[dData(l.dia).getDay()]}</span> ${esc(l.faltou)}</div>`).join('')}</div>`:''}
+    <button class="ir" onclick="diaFoco='${cid}';diaPer='semana';irPara('diario')">ver no Diário</button></div>`;
+}
+
+/* ---------- NAVEGACAO / BOOT ---------- */
+function irPara(p){ pagina=p; document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  document.querySelectorAll('.pag').forEach(s=>s.classList.toggle('on',s.id==='pag-'+p)); try{ sessionStorage.setItem('painel_pag',p); }catch(e){} window.scrollTo(0,0);
+  if(p==='diario'&&(!DIA.quando||Date.now()-new Date(DIA.quando)>120000)) buscarDiario(true); }
+function tudo(){
+  ordenarMeses(); renderAviso(); renderAbas(); totais(); renderMes(); renderAno(); renderPlan(); renderX1(); renderDiario(); renderFicha(); renderEquipe();
+}
+iniciarPainel();
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){ sincronizar(); if(!DIA.quando||Date.now()-new Date(DIA.quando)>300000) buscarDiario(true); }
+  else if(PV.pendente){ clearTimeout(PV.timer); enviarNuvem(); }
+});
+setInterval(()=>{ if(document.visibilityState==='visible') sincronizar(); },60000);
+window.addEventListener('beforeunload',e=>{ if(PV.pendente){ enviarNuvem(); e.preventDefault(); e.returnValue=''; } });
+</script>
+</body>
+</html>
