@@ -72,7 +72,8 @@ function gestorEntrar(aviso){
   $('app').innerHTML=`<section class="card"><h2>Modo gestor</h2>
     <p class="sub">Entra com a <b>chave do painel</b> (fica no painel, no fim da aba Diário do time, em "Chave do painel").</p>
     ${aviso?`<div class="dica">${esc(aviso)}</div>`:''}
-    <input class="pin" id="chave" type="password" autocomplete="off" style="font-size:18px;letter-spacing:.08em;padding-left:0" aria-label="Chave do painel">
+    <input class="pin" id="chave" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="font-size:18px;letter-spacing:.08em;padding-left:0" aria-label="Chave do painel">
+    <button class="link" type="button" onclick="const i=$('chave');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'mostrar a chave':'esconder a chave'">mostrar a chave</button>
     <div class="erro" id="chErro"></div>
     <button class="btn forte cheio" id="btCh">Entrar</button>
     <div class="fim"><button class="link" onclick="sairGestor()">Voltar pro app do consultor</button></div></section>`;

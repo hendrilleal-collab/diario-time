@@ -649,7 +649,8 @@ function pedirChave(aviso){
       <div style="font-size:18px;font-weight:600">Painel da Equipe</div>
       <div style="font-size:13px;color:var(--txt2);margin-top:6px;line-height:1.5">Digita a <b>chave do painel</b>. Ela fica guardada neste aparelho, e o painel fica igual em todos os aparelhos em que tu entrar.</div>
       ${aviso?`<div style="font-size:13px;color:var(--vermelho);margin-top:10px">${esc(aviso)}</div>`:''}
-      <input id="chEntrada" type="password" autocomplete="current-password" style="width:100%;margin-top:14px;font-size:16px;padding:12px;border:1.5px solid var(--linha);border-radius:10px">
+      <div style="display:flex;gap:8px;margin-top:14px"><input id="chEntrada" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" style="flex:1;min-width:0;font-size:16px;padding:12px;border:1.5px solid var(--linha);border-radius:10px">
+        <button class="mini" type="button" onclick="const i=$('chEntrada');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'mostrar':'esconder'">mostrar</button></div>
       <div id="chErro" style="font-size:13px;color:var(--vermelho);min-height:18px;margin-top:8px"></div>
       <button class="btn forte" id="chBt" style="width:100%;padding:12px;margin-top:4px">Entrar</button>
     </div></div>`;
@@ -1534,7 +1535,7 @@ function renderDiario(){
       </div>
       <div class="bloco cfg" style="align-items:stretch;flex-direction:column;gap:10px">
         <div><label>Link do app</label><div style="display:flex;gap:8px"><input class="inp" readonly value="${esc(link)}" onclick="this.select()"><button class="mini" onclick="copiarTxt('${esc(link)}',this)">Copiar</button></div></div>
-        <div><label>Chave do painel</label><div style="display:flex;gap:8px"><input class="inp" id="dChave" type="password" value="${esc(chaveNuvem())}"><button class="mini" onclick="salvarChave()">Salvar</button></div>
+        <div><label>Chave do painel</label><div style="display:flex;gap:8px"><input class="inp" id="dChave" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" value="${esc(chaveNuvem())}"><button class="mini" type="button" onclick="const i=$('dChave');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'mostrar':'esconder'">mostrar</button><button class="mini" onclick="salvarChave()">Salvar</button></div>
           <div class="nota" style="margin-top:6px">É o que deixa só o teu painel ver os números de todo mundo. Vai junto no backup.</div></div>
       </div></div>`;
   el.innerHTML=h;
