@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Diário do Time</title>
+<meta name="theme-color" content="#231F20">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Diário">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --preto:#231F20; --vermelho:#D03025; --vermelho-cl:#F0776B; --rosa:#FBECEB; --vinho:#3B2120;
+  --cinza:#F6F6F7; --branco:#FFFFFF; --linha:#E6E2E2; --txt2:#6B6567; --txt3:#9A9395;
+  --ok:#1F8A4C; --ambar:#B86E00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--preto);background:var(--cinza);
+  font-size:15px;min-height:100vh;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+button,input,textarea{font-family:inherit;font-size:inherit;color:inherit}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+.oculto{display:none!important}
+
+.topo{background:var(--preto);color:#fff;padding-top:env(safe-area-inset-top)}
+.topo .wrap{padding-top:22px;padding-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.etq{display:flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.etq::before{content:"";width:24px;height:3px;background:var(--vermelho);flex-shrink:0}
+h1{font-size:28px;font-weight:700;line-height:1.1;margin-top:8px;letter-spacing:-.3px}
+.quem{font-size:13px;color:rgba(255,255,255,.75);text-align:right}
+.quem b{display:block;color:#fff;font-weight:600;font-size:14px}
+
+.card{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:18px 16px;margin-top:16px}
+h2{font-size:18px;font-weight:600}
+.sub{font-size:13px;color:var(--txt2);margin-top:4px;line-height:1.5}
+.titulo{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--txt2);margin:22px 0 8px}
+
+.nomes{display:grid;gap:8px;margin-top:14px}
+.nome{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--cinza);border:1px solid var(--linha);
+  border-radius:12px;padding:13px 14px;cursor:pointer;font-weight:500}
+.nome:active{background:var(--rosa)}
+.ini{width:34px;height:34px;border-radius:50%;background:var(--preto);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:600;flex-shrink:0}
+.pin{width:100%;font-size:30px;letter-spacing:.6em;text-align:center;padding:14px 0 14px .6em;border:1.5px solid var(--linha);border-radius:12px;margin-top:16px;background:var(--cinza)}
+.pin:focus{outline:none;border-color:var(--vermelho);background:#fff}
+.erro{color:var(--vermelho);font-size:13px;margin-top:10px;min-height:18px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:14px;border-radius:10px;padding:12px 16px;cursor:pointer;
+  border:1px solid var(--linha);background:#fff}
+.btn.forte{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+.btn.cheio{width:100%}
+.btn:disabled{opacity:.55;cursor:default}
+.link{background:none;border:none;color:var(--txt2);text-decoration:underline;cursor:pointer;font-size:13px;padding:6px 0}
+
+.dias{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 2px 6px;margin:0 -2px;scrollbar-width:none}
+.dias::-webkit-scrollbar{display:none}
+.dia{flex:0 0 auto;min-width:62px;border:1px solid var(--linha);background:#fff;border-radius:12px;padding:8px 6px;text-align:center;cursor:pointer}
+.dia small{display:block;font-size:11px;color:var(--txt2);text-transform:lowercase}
+.dia b{display:block;font-size:18px;font-weight:600;line-height:1.2}
+.dia i{display:block;font-style:normal;font-size:10px;margin-top:2px;color:var(--txt3)}
+.dia.feito i{color:var(--ok);font-weight:600}
+.dia.on{background:var(--preto);border-color:var(--preto);color:#fff}
+.dia.on small,.dia.on i{color:rgba(255,255,255,.75)}
+.dia.on.feito i{color:#7FD6A3}
+
+.grupo{margin-top:18px}
+.grupo:first-child{margin-top:0}
+.gcab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+.gcab h3{font-size:14px;font-weight:600}
+.gcab span{font-size:12px;color:var(--txt2)}
+.campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.campo label{display:block;font-size:12px;color:var(--txt2);margin-bottom:4px}
+.campo input{width:100%;font-size:20px;font-weight:600;padding:10px 12px;border:1.5px solid var(--linha);border-radius:10px;background:var(--cinza)}
+.campo input:focus{outline:none;border-color:var(--vermelho);background:#fff}
+.barra{height:6px;border-radius:3px;background:var(--cinza);margin-top:10px;overflow:hidden}
+.barra div{height:100%;background:var(--vermelho-cl);border-radius:3px;transition:width .2s}
+.barra.ok div{background:var(--ok)}
+textarea{width:100%;min-height:84px;padding:10px 12px;border:1.5px solid var(--linha);border-radius:10px;background:var(--cinza);resize:vertical;line-height:1.45}
+textarea:focus{outline:none;border-color:var(--vermelho);background:#fff}
+
+.rodape-fixo{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linha);padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:10}
+.rodape-fixo .wrap{display:flex;align-items:center;gap:12px}
+.rodape-fixo .st{font-size:12px;color:var(--txt2);flex:1;line-height:1.35}
+.rodape-fixo .st.sujo{color:var(--ambar);font-weight:600}
+.rodape-fixo .btn{flex:0 0 auto;min-width:150px}
+
+.lemb{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.selo{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--cinza);color:var(--txt2)}
+.selo.ok{background:#E3F3EA;color:var(--ok)}
+.dica{background:var(--rosa);border-radius:10px;padding:12px;font-size:13px;line-height:1.5;margin-top:12px;color:var(--vinho)}
+.carregando{color:var(--txt3);font-size:13px;padding:10px 0}
+.fim{text-align:center;margin-top:20px}
+
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--preto);color:#fff;
+  padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:calc(100% - 32px);text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="topo"><div class="wrap">
+  <div><div class="etq">Equipe Ademicon</div><h1>Diário do Time</h1></div>
+  <div class="quem" id="quem"></div>
+</div></header>
+
+<main class="wrap" id="app"><div class="card"><div class="carregando">carregando…</div></div></main>
+<div class="rodape-fixo oculto" id="rodape"><div class="wrap">
+  <div class="st" id="st"></div>
+  <button class="btn forte" id="btSalvar" onclick="salvar()">Salvar o dia</button>
+</div></div>
+<div id="toast"></div>
+
+<script>
+const NUVEM={url:'https://xmlgexqrzukthwppixmq.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbGdleHFyenVrdGh3cHBpeG1xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxMDA0NjIsImV4cCI6MjEwMDY3NjQ2Mn0.SpQtRphf01MX4phG9nK1lgbVkcMmmbSkt3UTQXKyIgI'};
+const GRUPOS=[
+  {t:'Abordagens',total:'abord_dia',campos:[['whats','WhatsApp'],['insta','Instagram'],['messenger','Messenger']]},
+  {t:'Ligações',campos:[['ligacoes','Feitas','lig_dia'],['lig_atendidas','Atendidas']]},
+  {t:'Funil',campos:[['respostas','Respostas'],['interessados','Interessados'],['followups','Follow-ups','follow_dia'],['simulacoes','Simulações']]},
+  {t:'Reuniões',campos:[['reun_agendadas','Agendadas'],['reun_feitas','Feitas']]},
+  {t:'Fechamentos',campos:[['fech_qtd','Quantidade'],['fech_valor','Valor (R$)']]},
+];
+const CAMPOS=GRUPOS.flatMap(g=>g.campos.map(c=>c[0]));
+const DSEM=['dom','seg','ter','qua','qui','sex','sáb'];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function ler(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function gravar(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v); }catch(e){} }
+
+let TOKEN=ler('diario_token'), EU=null, DIAS={}, LISTA=[], SEL=null, SUJO=false, SALVANDO=false;
+
+async function nuvem(fn,args){
+  let r;
+  try{ r=await fetch(NUVEM.url+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json',apikey:NUVEM.key,Authorization:'Bearer '+NUVEM.key},body:JSON.stringify(args||{})}); }
+  catch(e){ const x=new Error('rede'); x.rede=true; throw x; }
+  const t=await r.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(e){ j=t; }
+  if(!r.ok) throw new Error((j&&j.message)||('erro '+r.status));
+  return j;
+}
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('on'),2600); }
+function erroTxt(e){
+  if(e.rede) return 'Sem internet agora. Confere a conexão e tenta de novo.';
+  const m=String(e.message||e);
+  if(m.includes('dia_fora_do_prazo')) return 'Esse dia já passou do prazo (dá pra lançar até 9 dias atrás).';
+  if(m.includes('fim_de_semana')) return 'Fim de semana não conta, lança na sexta ou na segunda.';
+  return 'Não deu certo agora. Tenta de novo em instantes.';
+}
+function sessaoCaiu(e){ return String(e&&e.message||'').includes('sessao_invalida'); }
+function sair(motivo){ TOKEN=null; EU=null; gravar('diario_token',null); SUJO=false; telaEntrar(motivo); }
+
+/* ---------- datas ---------- */
+function dData(s){ const [a,m,d]=s.split('-').map(Number); return new Date(a,m-1,d); }
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function soma(s,n){ const d=dData(s); d.setDate(d.getDate()+n); return iso(d); }
+const util=s=>{ const w=dData(s).getDay(); return w>0&&w<6; };
+
+/* ---------- entrar ---------- */
+async function telaEntrar(aviso){
+  $('quem').innerHTML=''; $('rodape').classList.add('oculto');
+  $('app').innerHTML=`<section class="card"><h2>Entrar</h2>
+    <p class="sub">Toca no teu nome e digita o PIN de 4 números que o teu gestor te passou.</p>
+    ${aviso?`<div class="dica">${esc(aviso)}</div>`:''}
+    <div class="nomes" id="nomes"><div class="carregando">carregando nomes…</div></div></section>`;
+  try{
+    const ns=await nuvem('app_nomes');
+    $('nomes').innerHTML=ns.length?ns.map(n=>`<button class="nome" data-id="${esc(n.id)}" data-nome="${esc(n.nome)}"><span class="ini">${esc(n.nome.trim().charAt(0).toUpperCase())}</span>${esc(n.nome)}</button>`).join('')
+      :`<div class="sub">Ninguém liberado ainda. Pede pro teu gestor liberar teu acesso no painel.</div>`;
+    $('nomes').onclick=e=>{ const b=e.target.closest('.nome'); if(b) telaPin(b.dataset.id,b.dataset.nome); };
+  }catch(e){
+    $('nomes').innerHTML=`<div class="erro">${esc(erroTxt(e))}</div><button class="btn" onclick="telaEntrar()">Tentar de novo</button>`;
+  }
+}
+function telaPin(id,nome){
+  $('app').innerHTML=`<section class="card"><h2>Oi, ${esc(nome.split(' ')[0])}!</h2>
+    <p class="sub">Digita teu PIN.</p>
+    <input class="pin" id="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="PIN de 4 números">
+    <div class="erro" id="pinErro"></div>
+    <button class="btn forte cheio" id="btEntrar" style="margin-top:6px">Entrar</button>
+    <div class="fim"><button class="link" onclick="telaEntrar()">Não sou ${esc(nome.split(' ')[0])}</button></div></section>`;
+  const inp=$('pin'), bt=$('btEntrar');
+  const ir=async()=>{
+    const pin=inp.value; if(!/^\d{4}$/.test(pin)){ $('pinErro').textContent='O PIN tem 4 números.'; return; }
+    bt.disabled=true; bt.textContent='Entrando…'; $('pinErro').textContent='';
+    try{
+      const r=await nuvem('app_entrar',{p_id:id,p_pin:pin});
+      if(r.erro==='bloqueado'){ $('pinErro').textContent=`Muitas tentativas erradas. Tenta de novo em ${r.minutos} min.`; }
+      else if(r.erro){ $('pinErro').textContent='PIN errado. Confere com teu gestor.'; inp.value=''; inp.focus(); }
+      else { TOKEN=r.token; gravar('diario_token',TOKEN); iniciar(); return; }
+    }catch(e){ $('pinErro').textContent=erroTxt(e); }
+    bt.disabled=false; bt.textContent='Entrar';
+  };
+  inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/\D/g,'').slice(0,4); if(inp.value.length===4) ir(); });
+  bt.onclick=ir; inp.focus();
+}
+
+/* ---------- diário ---------- */
+async function iniciar(){
+  $('app').innerHTML=`<div class="card"><div class="carregando">carregando…</div></div>`;
+  try{
+    EU=await nuvem('app_eu',{p_token:TOKEN});
+    const h=EU.hoje; LISTA=[]; for(let i=0;i<=9;i++){ const s=soma(h,-i); if(util(s)) LISTA.push(s); }
+    const rows=await nuvem('app_dias',{p_token:TOKEN,p_de:soma(h,-9),p_ate:h});
+    DIAS={}; (rows||[]).forEach(l=>DIAS[l.dia]=l);
+    if(!SEL||!LISTA.includes(SEL)) SEL=LISTA[0];
+    render();
+  }catch(e){
+    if(sessaoCaiu(e)) return sair('Tua sessão foi encerrada (o PIN pode ter sido trocado). Entra de novo.');
+    $('app').innerHTML=`<div class="card"><div class="erro">${esc(erroTxt(e))}</div><button class="btn" onclick="iniciar()">Tentar de novo</button></div>`;
+  }
+}
+const meta=k=>{ const v=Number(EU&&EU.metas&&EU.metas[k]); return v>0?v:0; };
+function valorTxt(v){ return v?Number(v).toLocaleString('pt-BR',{maximumFractionDigits:2}):''; }
+function lerValor(s){ s=String(s||'').replace(/[^\d.,]/g,''); if(!s) return 0;
+  if(s.includes(',')) s=s.replace(/\./g,'').replace(',','.'); else if((s.match(/\./g)||[]).length>1||/\.\d{3}$/.test(s)) s=s.replace(/\./g,'');
+  const n=Number(s); return isFinite(n)?n:0; }
+
+function render(){
+  const pn=EU.nome.split(' ')[0];
+  $('quem').innerHTML=`<b>${esc(pn)}</b>${DIAS[EU.hoje]?'hoje lançado ✓':(util(EU.hoje)?'falta lançar hoje':'bom fim de semana')}`;
+  const l=DIAS[SEL]||{};
+  $('app').innerHTML=`
+    <div class="titulo">Qual dia?</div>
+    <div class="dias" id="dias">${LISTA.map(s=>{ const d=dData(s);
+      return `<button class="dia${s===SEL?' on':''}${DIAS[s]?' feito':''}" onclick="trocarDia('${s}')"><small>${s===EU.hoje?'hoje':DSEM[d.getDay()]}</small><b>${d.getDate()}</b><i>${DIAS[s]?'lançado':'—'}</i></button>`; }).join('')}</div>
+    <section class="card" id="form">
+      ${GRUPOS.map(g=>`<div class="grupo"><div class="gcab"><h3>${g.t}</h3>${g.total?`<span id="tot-${g.total}"></span>`:''}</div>
+        <div class="campos">${g.campos.map(([k,rot,mk])=>`<div class="campo"><label for="f-${k}">${rot}${mk&&meta(mk)?` <span style="color:var(--txt3)">· meta ${meta(mk)}</span>`:''}</label>
+          <input id="f-${k}" type="text" inputmode="${k==='fech_valor'?'decimal':'numeric'}" ${k==='fech_valor'?'':'pattern="[0-9]*"'} autocomplete="off" placeholder="0"
+            value="${k==='fech_valor'?valorTxt(l[k]):(l[k]||'')}" data-k="${k}"></div>`).join('')}</div>
+        ${g.total&&meta(g.total)?`<div class="barra" id="bar-${g.total}"><div></div></div>`:''}</div>`).join('')}
+      <div class="grupo"><div class="gcab"><h3>O que faltou fazer?</h3></div>
+        <textarea id="f-faltou" maxlength="1500" placeholder="Opcional. O que travou, o que ficou pra amanhã…">${esc(l.faltou||'')}</textarea></div>
+    </section>
+    <section class="card" id="lembrete"></section>
+    <div class="fim"><button class="link" onclick="confirmarSair()">Sair deste aparelho</button></div>`;
+  $('form').addEventListener('input',e=>{
+    const k=e.target.dataset.k;
+    if(k&&k!=='fech_valor') e.target.value=e.target.value.replace(/\D/g,'').slice(0,5);
+    if(k==='fech_valor') e.target.value=e.target.value.replace(/[^\d.,]/g,'');
+    SUJO=true; atualizar();
+  });
+  $('form').addEventListener('focusin',e=>{ if(e.target.matches('.campo input')) setTimeout(()=>e.target.select(),0); });
+  $('rodape').classList.remove('oculto');
+  atualizar(); renderLembrete();
+  const on=document.querySelector('.dia.on'); if(on) on.scrollIntoView({inline:'nearest',block:'nearest'});
+}
+function lerForm(){
+  const d={}; CAMPOS.forEach(k=>{ const v=$('f-'+k).value; d[k]=k==='fech_valor'?lerValor(v):(parseInt(v,10)||0); });
+  d.faltou=$('f-faltou').value.trim(); return d;
+}
+function atualizar(){
+  const d=lerForm(), ab=d.whats+d.insta+d.messenger, m=meta('abord_dia');
+  $('tot-abord_dia').textContent=m?`${ab} de ${m}`:`${ab} no total`;
+  const b=$('bar-abord_dia'); if(b){ b.firstElementChild.style.width=Math.min(100,ab/m*100)+'%'; b.classList.toggle('ok',ab>=m); }
+  const l=DIAS[SEL], st=$('st'), dt=dData(SEL), rot=SEL===EU.hoje?'hoje':`${DSEM[dt.getDay()]} ${dt.getDate()}/${dt.getMonth()+1}`;
+  st.classList.toggle('sujo',SUJO);
+  st.textContent=SUJO?`Alterações não salvas (${rot})`:l?`${rot[0].toUpperCase()+rot.slice(1)} salvo${l.atualizado?' às '+new Date(l.atualizado).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):''} ✓`:`${rot[0].toUpperCase()+rot.slice(1)} ainda não lançado`;
+  $('btSalvar').textContent=SALVANDO?'Salvando…':(l&&!SUJO?'Salvar de novo':'Salvar o dia');
+  $('btSalvar').disabled=SALVANDO;
+}
+function trocarDia(s){
+  if(s===SEL) return;
+  if(SUJO&&!confirm('Tu mudou números e não salvou. Trocar de dia mesmo assim?')) return;
+  SEL=s; SUJO=false; render();
+}
+async function salvar(){
+  if(SALVANDO) return; SALVANDO=true; atualizar();
+  try{
+    const r=await nuvem('app_salvar',{p_token:TOKEN,p_dia:SEL,p_d:lerForm()});
+    DIAS[SEL]=r; SUJO=false; SALVANDO=false; render(); toast('Salvo ✓ teu gestor já vê no painel');
+  }catch(e){
+    SALVANDO=false; atualizar();
+    if(sessaoCaiu(e)) return sair('Tua sessão foi encerrada (o PIN pode ter sido trocado). Entra de novo e lança outra vez.');
+    toast(erroTxt(e));
+  }
+}
+function confirmarSair(){
+  if(!confirm('Sair deste aparelho? Pra entrar de novo vai precisar do PIN.')) return;
+  const t=TOKEN; sair(); nuvem('app_sair',{p_token:t}).catch(()=>{});
+}
+
+/* ---------- lembrete 19h ---------- */
+const ehIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const instalado=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const pushOk=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+async function inscricao(){ if(!pushOk()) return null; try{ const reg=await navigator.serviceWorker.ready; return await reg.pushManager.getSubscription(); }catch(e){ return null; } }
+async function renderLembrete(){
+  const el=$('lembrete'); if(!el) return;
+  const sub=pushOk()&&Notification.permission==='granted'?await inscricao():null;
+  let corpo='';
+  if(sub) corpo=`<div class="lemb"><div><h3 style="font-size:14px;font-weight:600">Lembrete das 19h</h3><div class="sub">Se não tiver lançado até as 19h, o app te avisa.</div></div><span class="selo ok">ligado</span></div>
+    <button class="link" onclick="desligarLembrete()">Desligar neste aparelho</button>`;
+  else{
+    corpo=`<div class="lemb"><div><h3 style="font-size:14px;font-weight:600">Lembrete das 19h</h3><div class="sub">Um aviso no celular se tu ainda não lançou o dia.</div></div><span class="selo">desligado</span></div>`;
+    if(ehIOS&&!instalado()) corpo+=`<div class="dica">No iPhone o lembrete só funciona com o app na tela de início:<br>1. Abre este link no <b>Safari</b><br>2. Toca em compartilhar <b>⬆︎</b> e depois <b>Adicionar à Tela de Início</b><br>3. Abre pelo ícone novo e liga o lembrete aqui</div>`;
+    else if(!pushOk()) corpo+=`<div class="dica">Este navegador não aceita notificações. No Android usa o Chrome; no iPhone, o Safari com o app na tela de início.</div>`;
+    else if(Notification.permission==='denied') corpo+=`<div class="dica">As notificações estão bloqueadas pra este app. Libera nas configurações do celular e volta aqui.</div>`;
+    else corpo+=`<button class="btn cheio" style="margin-top:12px" id="btLemb" onclick="ligarLembrete()">Ligar lembrete</button>`;
+    if(!ehIOS&&!instalado()) corpo+=`<div class="sub" style="margin-top:10px">Dica: no Chrome, menu <b>⋮</b> → <b>Instalar app</b> pra ter o ícone na tela.</div>`;
+  }
+  el.innerHTML=corpo;
+}
+function b64u(s){ const p='='.repeat((4-s.length%4)%4), b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(b,c=>c.charCodeAt(0)); }
+function aparelho(){ const u=navigator.userAgent; return /iphone/i.test(u)?'iPhone':/ipad/i.test(u)?'iPad':/android/i.test(u)?'Android':'Navegador'; }
+async function ligarLembrete(){
+  const bt=$('btLemb'); if(bt){ bt.disabled=true; bt.textContent='Ligando…'; }
+  try{
+    if(await Notification.requestPermission()!=='granted'){ toast('Sem permissão de notificação.'); return renderLembrete(); }
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){ const k=await nuvem('app_vapid'); sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(k)}); }
+    const j=sub.toJSON();
+    await nuvem('app_push_salvar',{p_token:TOKEN,p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_aparelho:aparelho()});
+    toast('Lembrete ligado ✓');
+  }catch(e){
+    if(sessaoCaiu(e)) return sair('Tua sessão foi encerrada. Entra de novo.');
+    toast(e.rede?erroTxt(e):'Não consegui ligar o lembrete neste aparelho.');
+  }
+  renderLembrete();
+}
+async function desligarLembrete(){
+  const sub=await inscricao(); if(!sub) return renderLembrete();
+  try{ await nuvem('app_push_remover',{p_token:TOKEN,p_endpoint:sub.endpoint}); }catch(e){}
+  try{ await sub.unsubscribe(); }catch(e){}
+  toast('Lembrete desligado'); renderLembrete();
+}
+
+/* ---------- boot ---------- */
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+window.addEventListener('beforeunload',e=>{ if(SUJO){ e.preventDefault(); e.returnValue=''; } });
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&TOKEN&&EU&&!SUJO&&!SALVANDO) iniciar(); });
+TOKEN?iniciar():telaEntrar();
+</script>
+</body>
+</html>
