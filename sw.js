@@ -1,6 +1,6 @@
 // Diário do Time: guarda o app pra abrir rápido e mostra o lembrete das 19h.
-const CACHE = 'diario-v1';
-const ARQUIVOS = ['./', 'index.html', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
+const CACHE = 'diario-v2';
+const ARQUIVOS = ['./', 'index.html', 'diag.js', 'gestor.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));
@@ -46,7 +46,8 @@ self.addEventListener('notificationclick', (e) => {
   e.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((cs) => {
       const c = cs.find((x) => x.url.startsWith(self.registration.scope));
-      return c ? c.focus() : self.clients.openWindow(alvo);
+      if (!c) return self.clients.openWindow(alvo);
+      return c.focus().then((f) => (f.url !== alvo && 'navigate' in f ? f.navigate(alvo) : f));
     }),
   );
 });

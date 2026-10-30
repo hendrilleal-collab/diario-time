@@ -97,6 +97,43 @@ textarea:focus{outline:none;border-color:var(--vermelho);background:#fff}
 .carregando{color:var(--txt3);font-size:13px;padding:10px 0}
 .fim{text-align:center;margin-top:20px}
 
+.abas{display:flex;gap:6px;background:#fff;border:1px solid var(--linha);border-radius:12px;padding:4px;margin-top:16px}
+.abas button{flex:1;border:none;background:none;border-radius:9px;padding:10px;font-weight:600;font-size:14px;color:var(--txt2);cursor:pointer}
+.abas button.on{background:var(--preto);color:#fff}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-top:14px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:0 0 auto;border:1px solid var(--linha);background:#fff;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer}
+.chips button.on{background:var(--preto);border-color:var(--preto);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:4px}
+.kpis div{background:var(--cinza);border-radius:10px;padding:10px 12px}
+.kpis small{display:block;font-size:11px;color:var(--txt2)}
+.kpis b{display:block;font-size:22px;font-weight:600;line-height:1.25}
+.kpis i{display:block;font-style:normal;font-size:11px;color:var(--txt3)}
+.lista{padding:4px 0}
+.linha{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--linha);padding:12px 16px;cursor:pointer}
+.linha:last-child{border-bottom:none}
+.ln1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ln1 b{font-weight:600}
+.ln2{font-size:13px;color:var(--txt2);margin-top:3px}
+.ln2 b{color:var(--preto)}
+.ln3{font-size:12px;color:var(--txt3);margin-top:3px}
+.st{flex-shrink:0;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.st.no{background:var(--rosa);color:var(--vermelho)}
+.st.ne{background:#FFF3E0;color:var(--ambar)}
+.st.ok{background:#E3F3EA;color:var(--ok)}
+.item{font-size:13px;line-height:1.5;padding:10px 0 10px 12px;border-left:3px solid var(--linha);margin:6px 0}
+.item b{display:block;font-size:14px}
+.item div{color:var(--txt2)}
+.item.grave{border-color:var(--vermelho)}
+.item.bom{border-color:var(--ok)}
+.fal{color:var(--txt2);font-size:12px}
+.perg{padding-left:20px;font-size:14px;line-height:1.5}
+.perg li{margin:6px 0}
+.tab{width:100%;border-collapse:collapse;font-size:13px}
+.tab th{text-align:left;font-size:11px;font-weight:600;color:var(--txt2);padding:0 6px 6px}
+.tab td{padding:7px 6px;border-top:1px solid var(--linha)}
+.tab td:first-child{padding-left:0}
+.tab .var{font-size:12px;color:var(--txt2);white-space:nowrap;text-align:right}
 #toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--preto);color:#fff;
   padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:calc(100% - 32px);text-align:center}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -132,7 +169,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function ler(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function gravar(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v); }catch(e){} }
 
-let TOKEN=ler('diario_token'), EU=null, DIAS={}, LISTA=[], SEL=null, SUJO=false, SALVANDO=false;
+let MODO='consultor', TOKEN=ler('diario_token'), EU=null, DIAS={}, LISTA=[], SEL=null, SUJO=false, SALVANDO=false;
 
 async function nuvem(fn,args){
   let r;
@@ -151,7 +188,7 @@ function erroTxt(e){
   return 'Não deu certo agora. Tenta de novo em instantes.';
 }
 function sessaoCaiu(e){ return String(e&&e.message||'').includes('sessao_invalida'); }
-function sair(motivo){ TOKEN=null; EU=null; gravar('diario_token',null); SUJO=false; telaEntrar(motivo); }
+function sair(motivo){ MODO='consultor'; TOKEN=null; EU=null; gravar('diario_token',null); SUJO=false; telaEntrar(motivo); }
 
 /* ---------- datas ---------- */
 function dData(s){ const [a,m,d]=s.split('-').map(Number); return new Date(a,m-1,d); }
@@ -161,11 +198,12 @@ const util=s=>{ const w=dData(s).getDay(); return w>0&&w<6; };
 
 /* ---------- entrar ---------- */
 async function telaEntrar(aviso){
-  $('quem').innerHTML=''; $('rodape').classList.add('oculto');
+  MODO='consultor'; $('quem').innerHTML=''; $('rodape').classList.add('oculto');
   $('app').innerHTML=`<section class="card"><h2>Entrar</h2>
     <p class="sub">Toca no teu nome e digita o PIN de 4 números que o teu gestor te passou.</p>
     ${aviso?`<div class="dica">${esc(aviso)}</div>`:''}
-    <div class="nomes" id="nomes"><div class="carregando">carregando nomes…</div></div></section>`;
+    <div class="nomes" id="nomes"><div class="carregando">carregando nomes…</div></div></section>
+    <div class="fim"><button class="link" onclick="location.hash='gestor'">Sou o gestor</button></div>`;
   try{
     const ns=await nuvem('app_nomes');
     $('nomes').innerHTML=ns.length?ns.map(n=>`<button class="nome" data-id="${esc(n.id)}" data-nome="${esc(n.nome)}"><span class="ini">${esc(n.nome.trim().charAt(0).toUpperCase())}</span>${esc(n.nome)}</button>`).join('')
@@ -200,7 +238,7 @@ function telaPin(id,nome){
 
 /* ---------- diário ---------- */
 async function iniciar(){
-  $('app').innerHTML=`<div class="card"><div class="carregando">carregando…</div></div>`;
+  MODO='consultor'; $('app').innerHTML=`<div class="card"><div class="carregando">carregando…</div></div>`;
   try{
     EU=await nuvem('app_eu',{p_token:TOKEN});
     const h=EU.hoje; LISTA=[]; for(let i=0;i<=9;i++){ const s=soma(h,-i); if(util(s)) LISTA.push(s); }
@@ -333,8 +371,13 @@ async function desligarLembrete(){
 /* ---------- boot ---------- */
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 window.addEventListener('beforeunload',e=>{ if(SUJO){ e.preventDefault(); e.returnValue=''; } });
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&TOKEN&&EU&&!SUJO&&!SALVANDO) iniciar(); });
-TOKEN?iniciar():telaEntrar();
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState!=='visible') return;
+  if(MODO==='gestor'&&CHAVE&&G.hoje) gestorIniciar(); else if(MODO==='consultor'&&TOKEN&&EU&&!SUJO&&!SALVANDO) iniciar(); });
+window.addEventListener('hashchange',()=>{ if(location.hash==='#gestor'&&MODO!=='gestor') gestorIniciar(); });
+// gestor.js carrega depois deste script, por isso o início espera a página
+document.addEventListener('DOMContentLoaded',()=>{ location.hash==='#gestor'?gestorIniciar():TOKEN?iniciar():telaEntrar(); });
 </script>
+<script src="diag.js"></script>
+<script src="gestor.js"></script>
 </body>
 </html>
