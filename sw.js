@@ -1,6 +1,6 @@
 // Diário do Time: guarda o app pra abrir rápido e mostra o lembrete das 19h.
-const CACHE = 'diario-v2';
-const ARQUIVOS = ['./', 'index.html', 'diag.js', 'gestor.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
+const CACHE = 'diario-v3';
+const ARQUIVOS = ['./', 'index.html', 'diag.js', 'gestor.js', 'time.js', 'manifest.webmanifest', 'icone-180.png', 'icone-192.png', 'icone-512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));

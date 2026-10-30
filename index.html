@@ -134,6 +134,22 @@ textarea:focus{outline:none;border-color:var(--vermelho);background:#fff}
 .tab td{padding:7px 6px;border-top:1px solid var(--linha)}
 .tab td:first-child{padding-left:0}
 .tab .var{font-size:12px;color:var(--txt2);white-space:nowrap;text-align:right}
+.medalha{width:28px;text-align:center;font-size:18px;flex-shrink:0}
+.rk{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--linha)}
+.rk:last-child{border-bottom:none}
+.rk.eu{background:var(--rosa)}
+.rk .nm{flex:1;min-width:0}
+.rk .nm b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk .nm span{font-size:12px;color:var(--txt2)}
+.rk .pct{font-size:18px;font-weight:700;text-align:right}
+.rk .pct small{display:block;font-size:10px;font-weight:400;color:var(--txt3)}
+.conq{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.conq>div{border:1px solid var(--linha);border-radius:12px;padding:12px;font-size:13px;line-height:1.35;background:#fff}
+.conq>div b{display:block;font-size:22px;line-height:1.2}
+.conq>div.off{opacity:.45;background:var(--cinza)}
+.comp-meta{display:flex;justify-content:space-between;font-size:13px;margin-top:12px}
+.comp-meta b{font-weight:600}
+.campo textarea{min-height:70px}
 #toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--preto);color:#fff;
   padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:calc(100% - 32px);text-align:center}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -169,7 +185,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function ler(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function gravar(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v); }catch(e){} }
 
-let MODO='consultor', TOKEN=ler('diario_token'), EU=null, DIAS={}, LISTA=[], SEL=null, SUJO=false, SALVANDO=false;
+let MODO='consultor', cAba='dia', COMP=null, RANK=null, TOKEN=ler('diario_token'), EU=null, DIAS={}, LISTA=[], SEL=null, SUJO=false, SALVANDO=false;
 
 async function nuvem(fn,args){
   let r;
@@ -244,6 +260,7 @@ async function iniciar(){
     const h=EU.hoje; LISTA=[]; for(let i=0;i<=9;i++){ const s=soma(h,-i); if(util(s)) LISTA.push(s); }
     const rows=await nuvem('app_dias',{p_token:TOKEN,p_de:soma(h,-9),p_ate:h});
     DIAS={}; (rows||[]).forEach(l=>DIAS[l.dia]=l);
+    COMP=await nuvem('app_compromisso',{p_token:TOKEN}).catch(()=>null);
     if(!SEL||!LISTA.includes(SEL)) SEL=LISTA[0];
     render();
   }catch(e){
@@ -260,8 +277,9 @@ function lerValor(s){ s=String(s||'').replace(/[^\d.,]/g,''); if(!s) return 0;
 function render(){
   const pn=EU.nome.split(' ')[0];
   $('quem').innerHTML=`<b>${esc(pn)}</b>${DIAS[EU.hoje]?'hoje lançado ✓':(util(EU.hoje)?'falta lançar hoje':'bom fim de semana')}`;
+  if(cAba==='time') return renderTime();
   const l=DIAS[SEL]||{};
-  $('app').innerHTML=`
+  $('app').innerHTML=`${abasConsultor()}
     <div class="titulo">Qual dia?</div>
     <div class="dias" id="dias">${LISTA.map(s=>{ const d=dData(s);
       return `<button class="dia${s===SEL?' on':''}${DIAS[s]?' feito':''}" onclick="trocarDia('${s}')"><small>${s===EU.hoje?'hoje':DSEM[d.getDay()]}</small><b>${d.getDate()}</b><i>${DIAS[s]?'lançado':'—'}</i></button>`; }).join('')}</div>
@@ -274,6 +292,7 @@ function render(){
       <div class="grupo"><div class="gcab"><h3>O que faltou fazer?</h3></div>
         <textarea id="f-faltou" maxlength="1500" placeholder="Opcional. O que travou, o que ficou pra amanhã…">${esc(l.faltou||'')}</textarea></div>
     </section>
+    ${htmlCompromisso()}
     <section class="card" id="lembrete"></section>
     <div class="fim"><button class="link" onclick="confirmarSair()">Sair deste aparelho</button></div>`;
   $('form').addEventListener('input',e=>{
@@ -372,12 +391,15 @@ async function desligarLembrete(){
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 window.addEventListener('beforeunload',e=>{ if(SUJO){ e.preventDefault(); e.returnValue=''; } });
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState!=='visible') return;
-  if(MODO==='gestor'&&CHAVE&&G.hoje) gestorIniciar(); else if(MODO==='consultor'&&TOKEN&&EU&&!SUJO&&!SALVANDO) iniciar(); });
-window.addEventListener('hashchange',()=>{ if(location.hash==='#gestor'&&MODO!=='gestor') gestorIniciar(); });
+  if(MODO==='gestor'&&CHAVE&&G.hoje&&!gEditando) gestorIniciar(); else if(MODO==='consultor'&&TOKEN&&EU&&!SUJO&&!SALVANDO) iniciar(); });
+window.addEventListener('hashchange',()=>{ if(location.hash.startsWith('#gestor')){ if(location.hash==='#gestor-mes') gAba='mes'; if(MODO!=='gestor'||G.hoje) gestorIniciar(); } });
 // gestor.js carrega depois deste script, por isso o início espera a página
-document.addEventListener('DOMContentLoaded',()=>{ location.hash==='#gestor'?gestorIniciar():TOKEN?iniciar():telaEntrar(); });
+document.addEventListener('DOMContentLoaded',()=>{
+  if(location.hash==='#gestor-mes') gAba='mes';
+  location.hash.startsWith('#gestor')?gestorIniciar():TOKEN?iniciar():telaEntrar(); });
 </script>
 <script src="diag.js"></script>
 <script src="gestor.js"></script>
+<script src="time.js"></script>
 </body>
 </html>
