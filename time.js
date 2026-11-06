@@ -60,7 +60,7 @@ function desenharRanking(){
         <div class="nm"><b>${esc(r.eu?'Você':r.nome.split(' ')[0])}</b><span>${r.p.abord} abord. · ${r.p.reun} reun. · ${r.p.fech} fech.${r.sequencia>=3?` · 🔥 ${r.sequencia}`:''}</span></div>
         <div class="pct">${r.meta_abord?r.pct+'%':'–'}<small>${r.p.dias} ${r.p.dias===1?'dia':'dias'}</small></div></div>`).join('')}
     </section>
-    <p class="sub" style="margin-top:8px">A % compara tuas abordagens com a meta de cada dia útil${rPer==='semana'?' da semana':' do mês'} até ontem (hoje conta quando tu lança). 🔥 = dias seguidos lançando.</p>`;
+    <p class="sub" style="margin-top:8px">A % compara as abordagens de cada um com a meta que ele mesmo escolheu, em cada dia útil${rPer==='semana'?' da semana':' do mês'} até ontem (hoje conta quando tu lança). 🔥 = dias seguidos lançando.</p>`;
 }
 function conquistas(eu,pos,uteis){
   const seq=eu.sequencia, prox=[5,10,20,40,60,100].find(n=>n>seq)||seq+20;

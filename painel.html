@@ -1503,14 +1503,22 @@ function renderDiario(){
         return `<tr><td style="font-weight:600;white-space:nowrap">${nm}</td><td class="pc">${dFmt(dAb(l))}</td><td class="fal">${l.whats} / ${l.insta} / ${l.messenger}</td><td>${l.ligacoes}<span class="fal"> · ${l.lig_atendidas}</span></td><td>${l.respostas}</td><td>${l.interessados}</td><td>${l.followups}</td><td>${l.simulacoes}</td><td>${l.reun_agendadas}<span class="fal"> · ${l.reun_feitas}</span></td><td class="pc" style="color:var(--vermelho)">${l.fech_qtd?l.fech_qtd+' · '+rs(l.fech_valor):'–'}</td><td style="min-width:220px;font-size:12.5px;white-space:pre-wrap">${esc(l.faltou)||'<span class="fal">–</span>'}</td></tr>`; }).join('')}
       </tbody></table></div>`;
   }
-  // metas individuais
-  h+=`<div class="titulo" id="dMetas">Metas de cada um <span>por dia útil, de segunda a sexta</span></div>
-    <div class="sub">Cada consultor com a sua meta. Em branco, abordagens usa o padrão do time (${dFmt(DIA.metas.abord_dia)}) e o resto fica sem meta. Aparece no app dele e entra na leitura do painel.</div>
-    <div class="tab-wrap"><table style="min-width:760px"><thead><tr><th>Consultor</th><th>Abordagens/dia</th><th>Ligações/dia</th><th>Follow-ups/dia</th><th>Reuniões agendadas/semana</th><th></th></tr></thead><tbody>
-    ${lista.map(c=>{ const r=DIA.cons.find(x=>x.id===c.id), m=(r&&r.metas)||{};
-      return `<tr><td class="nome-cel">${esc(c.nome)}</td>${[['abord_dia',DIA.metas.abord_dia],['lig_dia',''],['follow_dia',''],['reun_sem','']].map(([k,ph])=>
-        `<td><input class="inp curto" type="number" min="0" step="1" style="width:96px" id="m-${k}-${c.id}" value="${m[k]||''}" placeholder="${ph}" onchange="salvarMetasCons('${c.id}')"></td>`).join('')}
-        <td class="fal" id="mst-${c.id}"></td></tr>`; }).join('')}
+  // metas: cada consultor escolhe as dele na segunda; o gestor vê, compara e pode sugerir
+  const MK=[['abord_dia','Abord./dia'],['lig_dia','Lig./dia'],['follow_dia','Follow/dia'],['reun_sem','Reun./semana']];
+  h+=`<div class="titulo" id="dMetas">Metas que eles escolheram <span>cada um define as suas na segunda, valem a semana toda</span></div>
+    <div class="sub">A meta escolhida por ele é a régua de tudo: app, gráficos, leitura do painel e ranking. Seta pra baixo = baixou em relação à semana anterior. Tua sugestão aparece pra ele na hora de escolher, e vale enquanto ele não define a dele.</div>
+    <div class="tab-wrap"><table style="min-width:980px"><thead><tr class="dnw"><th>Consultor</th>${MK.map(([,r])=>`<th>${r}</th>`).join('')}<th>Últimas semanas · abord./dia</th><th>Tua sugestão</th><th></th></tr></thead><tbody>
+    ${lista.map(c=>{ const r=DIA.cons.find(x=>x.id===c.id)||{}, mp=r.metas_proprias||{}, mg=r.metas_gestor||{}, hs=r.metas_hist||[];
+      const ant=hs[1]||null, am=(ant&&ant.metas)||{};
+      const cel=k=>{ const v=mp[k]; if(!v) return '<span class="fal">–</span>';
+        const a=am[k], seta=a?(v<a?` <span style="color:var(--vermelho)" title="era ${a}">▼ ${a}</span>`:v>a?` <span style="color:var(--ok)" title="era ${a}">▲ ${a}</span>`:''):'';
+        return `<b>${v}</b>${seta}`; };
+      const def=Object.keys(mp).length>0, semAt=hs[0]&&hs[0].semana===dSegunda(dHoje());
+      return `<tr class="dnw"><td class="nome-cel">${esc(c.nome)}<div class="fal" style="font-weight:400">${!r.tem_pin?'sem acesso ao app':!def?'<span style="color:var(--ambar)">ainda não definiu</span>':semAt?'definiu nesta semana':'mantendo a da semana passada'}</div></td>
+        ${MK.map(([k])=>`<td>${cel(k)}</td>`).join('')}
+        <td class="fal">${hs.slice(0,6).reverse().map(x=>{ const d=dData(x.semana); return `<span title="semana de ${d.getDate()}/${d.getMonth()+1}">${x.metas.abord_dia||'–'}</span>`; }).join(' → ')||'–'}</td>
+        <td><input class="inp curto" type="number" min="0" style="width:80px" id="m-abord_dia-${c.id}" value="${mg.abord_dia||''}" placeholder="abord." title="Sugestão de abordagens/dia" onchange="salvarMetasCons('${c.id}')"><span class="fal" id="mst-${c.id}"></span></td>
+        <td>${r.tem_pin?(r.metas_liberadas?'<span class="st ok">pode trocar hoje</span>':`<button class="mini" title="Deixa ele trocar as metas hoje, mesmo não sendo segunda" onclick="liberarTrocaMetas('${c.id}')">Liberar troca hoje</button>`):''}</td></tr>`; }).join('')}
     </tbody></table></div>`;
   // acesso
   const link=NUVEM.app;
@@ -1527,11 +1535,11 @@ function renderDiario(){
     </tbody></table></div>
     <div class="dois" style="margin-top:14px">
       <div class="bloco cfg">
-        <div><label>Abordagens/dia · padrão</label><input type="number" id="dMetaAb" min="1" value="${DIA.metas.abord_dia}"></div>
+        <div><label>Abordagens/dia · padrão do time</label><input type="number" id="dMetaAb" min="1" value="${DIA.metas.abord_dia}"></div>
         <div><label>% mínimo</label><input type="number" id="dMetaPct" min="1" max="100" value="${DIA.metas.pct_min}"></div>
         <div><label>Dias sem lançar</label><input type="number" id="dMetaDias" min="1" max="10" value="${DIA.metas.dias_sem_lancar}"></div>
         <button class="mini forte" onclick="salvarMetasDiario()">Salvar</button>
-        <div class="nota">Regras do alerta de X1. O padrão de abordagens vale pra quem não tem meta própria. O % mínimo é quanto da meta precisa fazer antes do painel apontar.</div>
+        <div class="nota">Regras do alerta de X1. O padrão de abordagens só vale pra quem ainda não escolheu a própria meta e não tem sugestão tua. O % mínimo é quanto da meta precisa fazer antes do painel apontar.</div>
       </div>
       <div class="bloco cfg" style="align-items:stretch;flex-direction:column;gap:10px">
         <div><label>Link do app</label><div style="display:flex;gap:8px"><input class="inp" readonly value="${esc(link)}" onclick="this.select()"><button class="mini" onclick="copiarTxt('${esc(link)}',this)">Copiar</button></div></div>
@@ -1561,11 +1569,16 @@ async function bloquearApp(cid){
   const c=porId(cid); if(!confirm('Tirar o acesso do '+c.nome+' ao app? Os lançamentos dele continuam guardados.')) return;
   try{ await nuvem('g_consultor_bloquear',{p_chave:chaveNuvem(),p_id:cid}); if(S.nuvem.pins) delete S.nuvem.pins[cid]; salvar(); buscarDiario(); }catch(e){ alert('Não consegui agora. Confere a internet.'); }
 }
+function dSegunda(s){ return dSoma(s,-((dData(s).getDay()+6)%7)); }
+async function liberarTrocaMetas(cid){
+  const c=porId(cid); if(!confirm('Deixar o '+c.nome.split(' ')[0]+' trocar as metas hoje? Amanhã trava de novo até segunda.')) return;
+  try{ await nuvem('g_metas_liberar',{p_chave:chaveNuvem(),p_id:cid}); buscarDiario(); }catch(e){ alert('Não consegui agora. Confere a internet.'); }
+}
 async function salvarMetasCons(cid){
-  const c=porId(cid), m={}; ['abord_dia','lig_dia','follow_dia','reun_sem'].forEach(k=>m[k]=parseInt($('m-'+k+'-'+cid).value)||0);
+  const c=porId(cid), r0=DIA.cons.find(y=>y.id===cid)||{}, m=Object.assign({},r0.metas_gestor||{}); m.abord_dia=parseInt($('m-abord_dia-'+cid).value)||0;
   const st=$('mst-'+cid); if(st) st.textContent='salvando…';
   try{ const r=await nuvem('g_consultor_metas',{p_chave:chaveNuvem(),p_id:cid,p_nome:c.nome,p_metas:m});
-    const x=DIA.cons.find(y=>y.id===cid); if(x) x.metas=r; else DIA.cons.push({id:cid,nome:c.nome,ativo:true,tem_pin:false,metas:r});
+    const x=DIA.cons.find(y=>y.id===cid); if(x){ x.metas_gestor=r; x.metas=Object.assign({},r,x.metas_proprias||{}); } else DIA.cons.push({id:cid,nome:c.nome,ativo:true,tem_pin:false,metas:r,metas_gestor:r});
     if(st){ st.textContent='salvo ✓'; st.style.color='var(--ok)'; } setTimeout(()=>{ renderDiario(); renderX1(); },700);
   }catch(e){ if(st){ st.textContent='não salvou'; st.style.color='var(--vermelho)'; } }
 }

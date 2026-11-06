@@ -150,6 +150,34 @@ textarea:focus{outline:none;border-color:var(--vermelho);background:#fff}
 .comp-meta{display:flex;justify-content:space-between;font-size:13px;margin-top:12px}
 .comp-meta b{font-weight:600}
 .campo textarea{min-height:70px}
+/* metas e retorno do dia */
+.metas-card.destaque{border-top:4px solid var(--vermelho)}
+.metas-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+.metas-form .campo input{font-size:20px}
+.metas-lista{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.metas-lista div{background:var(--cinza);border-radius:10px;padding:8px 10px}
+.metas-lista b{display:block;font-size:20px;font-weight:700;line-height:1.2}
+.metas-lista span{font-size:11.5px;color:var(--txt2)}
+.resumo-l{margin:12px 0 4px 18px;font-size:14px;line-height:1.55}
+.resumo-l li{margin:5px 0}
+.ret-ov{position:fixed;inset:0;background:rgba(35,31,32,.55);z-index:40;display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .2s}
+.ret-ov.on{opacity:1}
+.ret{background:#fff;width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:22px 18px calc(18px + env(safe-area-inset-bottom));border-top:4px solid var(--vermelho)}
+.ret h2{font-size:20px;font-weight:700;line-height:1.25}
+.ret-meta{margin-top:10px;font-size:14px;line-height:1.6}
+.ret-bl{margin-top:12px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.5}
+.ret-bl b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.ret-bl.at{background:#FFF3E0}
+.ret-bl.at b{color:var(--ambar)}
+.ret-bl.bom{background:#E3F3EA}
+.ret-bl.bom b{color:var(--ok)}
+.ret-bl.dc{background:var(--cinza)}
+.ret-pe{margin-top:12px;background:var(--preto);color:#fff;border-radius:12px;padding:11px 13px;font-size:13px;line-height:1.5}
+.ret-carregando{text-align:center;padding:28px 0 22px;color:var(--txt2);font-size:14px}
+.ret-pt{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--vermelho);margin:0 4px 12px;animation:pulo 1s infinite ease-in-out}
+.ret-pt:nth-child(2){animation-delay:.15s}.ret-pt:nth-child(3){animation-delay:.3s}
+@keyframes pulo{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.ret-pt{animation:none}}
 #toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--preto);color:#fff;
   padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:30;max-width:calc(100% - 32px);text-align:center}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -280,6 +308,7 @@ function render(){
   if(cAba==='time') return renderTime();
   const l=DIAS[SEL]||{};
   $('app').innerHTML=`${abasConsultor()}
+    ${htmlMetas()}
     <div class="titulo">Qual dia?</div>
     <div class="dias" id="dias">${LISTA.map(s=>{ const d=dData(s);
       return `<button class="dia${s===SEL?' on':''}${DIAS[s]?' feito':''}" onclick="trocarDia('${s}')"><small>${s===EU.hoje?'hoje':DSEM[d.getDay()]}</small><b>${d.getDate()}</b><i>${DIAS[s]?'lançado':'—'}</i></button>`; }).join('')}</div>
@@ -328,8 +357,10 @@ function trocarDia(s){
 async function salvar(){
   if(SALVANDO) return; SALVANDO=true; atualizar();
   try{
+    const jaTinha=!!DIAS[SEL], dia=SEL;
     const r=await nuvem('app_salvar',{p_token:TOKEN,p_dia:SEL,p_d:lerForm()});
-    DIAS[SEL]=r; SUJO=false; SALVANDO=false; render(); toast('Salvo ✓ teu gestor já vê no painel');
+    DIAS[SEL]=r; SUJO=false; SALVANDO=false; render();
+    if(!jaTinha||dia===EU.hoje) mostrarRetorno(dia); else toast('Salvo ✓ teu gestor já vê no painel');
   }catch(e){
     SALVANDO=false; atualizar();
     if(sessaoCaiu(e)) return sair('Tua sessão foi encerrada (o PIN pode ter sido trocado). Entra de novo e lança outra vez.');
@@ -400,6 +431,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 <script src="diag.js"></script>
 <script src="gestor.js"></script>
+<script src="metas.js"></script>
 <script src="time.js"></script>
 </body>
 </html>
