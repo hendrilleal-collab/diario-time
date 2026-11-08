@@ -316,7 +316,6 @@ textarea.ta::placeholder{color:#B5AEAF}
 </div>
 <div class="nav"><div class="wrap" id="nav">
   <button data-p="metas" onclick="irPara('metas')">Metas</button>
-  <button data-p="plan" onclick="irPara('plan')">Planejamento do mês</button>
   <button data-p="x1" onclick="irPara('x1')">X1</button>
   <button data-p="diario" onclick="irPara('diario')">Diário do time</button>
   <button data-p="equipe" onclick="irPara('equipe')">Equipe</button>
@@ -364,43 +363,6 @@ textarea.ta::placeholder{color:#B5AEAF}
       </table>
     </div>
     <div class="legenda">Meta anual = meta de antes do painel + soma das metas de cada mês. Mudou a meta anual, a diferença se divide igual entre os meses que ainda não fecharam. Mês fechado não muda.</div>
-  </section>
-
-  <!-- ================= PLANEJAMENTO ================= -->
-  <section class="pag" id="pag-plan">
-    <div class="callout">
-      <div class="etq">Ritual de gestão · 1x por mês · toda a equipe junta</div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:10px">
-        <div style="font-size:26px;font-weight:700;line-height:1.15">Planejamento de <span id="planMes">–</span></div>
-        <div class="acoes">
-          <select class="inp" id="planSel" style="width:auto;background:#fff" onchange="S.ativo=+this.value;salvar();tudo()"></select>
-          <button class="mini forte" onclick="textoGrupo()">Texto pro grupo</button>
-        </div>
-      </div>
-      <div style="font-size:12.5px;font-weight:300;color:rgba(255,255,255,.72);margin-top:8px">Pauta: mês que passou meta x realizado · metas quebradas por semana · prioridades máximas · bloqueios. Tudo registrado no grupo. Quem não entregou explica no privado.</div>
-    </div>
-
-    <div class="titulo">01 · Mês que passou · <span id="planAnt">–</span></div>
-    <div id="planRev"></div>
-
-    <div class="titulo">02 · Metas do mês quebradas por semana</div>
-    <div class="sub">A meta da semana é proporcional aos dias úteis de cada semana. Ajusta a meta do mês aqui mesmo se precisar.</div>
-    <div class="tab-wrap"><table style="min-width:860px"><thead id="cabSem"></thead><tbody id="corpoSem"></tbody></table></div>
-
-    <div class="dois" style="margin-top:34px">
-      <div>
-        <div class="titulo" style="margin-top:0">03 · Prioridades máximas</div>
-        <div class="bloco"><div class="lista-ed" id="prior"></div>
-          <button class="add-linha" style="margin-top:10px" onclick="addPrior()">+ prioridade</button>
-          <div class="legenda" style="margin-top:8px">Poucas e claras. Até 3 é o ideal.</div></div>
-      </div>
-      <div>
-        <div class="titulo" style="margin-top:0">04 · Bloqueios</div>
-        <div class="bloco"><div class="lista-ed" id="bloq"></div>
-          <button class="add-linha" style="margin-top:10px" onclick="addBloq()">+ bloqueio</button>
-          <div class="legenda" style="margin-top:8px">O que pode travar e quem resolve. Marca quando resolver.</div></div>
-      </div>
-    </div>
   </section>
 
   <!-- ================= X1 ================= -->
@@ -666,7 +628,7 @@ async function iniciarPainel(){
   if(!S){ if(!carregar()){ S=migrar(null); semDados=true; } }
   try{ PV.versao=Number(localStorage.getItem('painel_versao'))||0; PV.pendente=localStorage.getItem('painel_pendente')==='1'; }catch(e){}
   definirFotoGestor(S.fotoGestor); tudo();
-  if(!painelIniciado){ painelIniciado=true; let pIni='metas'; try{ pIni=sessionStorage.getItem('painel_pag')||'metas'; }catch(e){} irPara(pIni); }
+  if(!painelIniciado){ painelIniciado=true; let pIni='metas'; try{ pIni=sessionStorage.getItem('painel_pag')||'metas'; }catch(e){} if(!document.getElementById('pag-'+pIni)) pIni='metas'; irPara(pIni); }
   estadoTxt('conferindo a nuvem…');
   await sincronizar();
   buscarDiario(true);
@@ -715,7 +677,7 @@ function renderAbas(){
     b.onclick=()=>{ S.ativo=i; salvar(); tudo(); }; bar.appendChild(b);
   });
   const add=document.createElement('button'); add.className='aba-add'; add.textContent='+ mês'; add.onclick=novoMes; bar.appendChild(add);
-  $('planSel').innerHTML=S.meses.map((m,i)=>`<option value="${i}"${i===S.ativo?' selected':''}>${m.label}</option>`).join('');
+  if($('planSel')) $('planSel').innerHTML=S.meses.map((m,i)=>`<option value="${i}"${i===S.ativo?' selected':''}>${m.label}</option>`).join('');
 }
 function novoMes(){
   const u=S.meses[S.meses.length-1]; let mes,ano;
@@ -1616,7 +1578,7 @@ function irPara(p){ pagina=p; document.querySelectorAll('#nav button').forEach(b
   document.querySelectorAll('.pag').forEach(s=>s.classList.toggle('on',s.id==='pag-'+p)); try{ sessionStorage.setItem('painel_pag',p); }catch(e){} window.scrollTo(0,0);
   if(p==='diario'&&(!DIA.quando||Date.now()-new Date(DIA.quando)>120000)) buscarDiario(true); }
 function tudo(){
-  ordenarMeses(); renderAviso(); renderAbas(); totais(); renderMes(); renderAno(); renderPlan(); renderX1(); renderDiario(); renderFicha(); renderEquipe();
+  ordenarMeses(); renderAviso(); renderAbas(); totais(); renderMes(); renderAno(); renderX1(); renderDiario(); renderFicha(); renderEquipe();
 }
 iniciarPainel();
 document.addEventListener('visibilitychange',()=>{
