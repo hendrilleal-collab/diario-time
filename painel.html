@@ -261,6 +261,14 @@ textarea.ta::placeholder{color:#B5AEAF}
 .lembra.dapp .nums small{letter-spacing:.08em}
 .lembra.dapp .ir{border:none;background:none;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--vermelho);cursor:pointer;padding:0;margin-top:8px;text-decoration:underline}
 
+/* SALARIO */
+.sal-form{display:grid;grid-template-columns:140px 1.4fr 120px 140px 80px auto auto;gap:10px;align-items:end}
+.sal-form label{display:block;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-bottom:5px}
+.sal-form .inp{width:100%}
+.sal-ck label{display:flex;gap:7px;align-items:center;font-size:12.5px;font-weight:500;color:var(--preto);letter-spacing:0;text-transform:none;cursor:pointer;padding-bottom:9px}
+.sal-prev{margin-top:12px;font-size:13px;line-height:1.55;background:var(--cinza);border-radius:10px;padding:10px 12px}
+@media (max-width:900px){ .sal-form{grid-template-columns:1fr 1fr} }
+
 /* CONFIG */
 .cfg{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end}
 .cfg label{display:block;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
@@ -319,6 +327,7 @@ textarea.ta::placeholder{color:#B5AEAF}
   <button data-p="x1" onclick="irPara('x1')">X1</button>
   <button data-p="diario" onclick="irPara('diario')">Diário do time</button>
   <button data-p="equipe" onclick="irPara('equipe')">Equipe</button>
+  <button data-p="salario" onclick="irPara('salario')">Salário</button>
 </div></div>
 
 <div class="wrap">
@@ -390,6 +399,9 @@ textarea.ta::placeholder{color:#B5AEAF}
 
   <!-- ================= DIARIO DO TIME ================= -->
   <section class="pag" id="pag-diario"></section>
+
+  <!-- ================= SALÁRIO ================= -->
+  <section class="pag" id="pag-salario"></section>
 
   <!-- ================= EQUIPE ================= -->
   <section class="pag" id="pag-equipe">
@@ -1578,8 +1590,11 @@ function irPara(p){ pagina=p; document.querySelectorAll('#nav button').forEach(b
   document.querySelectorAll('.pag').forEach(s=>s.classList.toggle('on',s.id==='pag-'+p)); try{ sessionStorage.setItem('painel_pag',p); }catch(e){} window.scrollTo(0,0);
   if(p==='diario'&&(!DIA.quando||Date.now()-new Date(DIA.quando)>120000)) buscarDiario(true); }
 function tudo(){
-  ordenarMeses(); renderAviso(); renderAbas(); totais(); renderMes(); renderAno(); renderX1(); renderDiario(); renderFicha(); renderEquipe();
+  ordenarMeses(); renderAviso(); renderAbas(); totais(); renderMes(); renderAno(); renderX1(); renderDiario(); renderFicha(); renderEquipe(); if(typeof renderSalario==='function') renderSalario();
 }
+</script>
+<script src="salario.js"></script>
+<script>
 iniciarPainel();
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){ sincronizar(); if(!DIA.quando||Date.now()-new Date(DIA.quando)>300000) buscarDiario(true); }
