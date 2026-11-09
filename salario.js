@@ -227,11 +227,48 @@ function salCusto(i,campo,v){ const c=SAL().config.custos; if(campo==='del'){ c.
   salvar(); renderSalario(); }
 
 /* ---------- DRE: entradas e saídas do mês (vindas do DRE dele + estimativa) ---------- */
+/* DRE ao vivo: o artifact do DRE grava os itens de cada mês no Supabase (painel_dre) e o painel lê aqui */
+const SALDRE={meses:null,atualizado:null,buscado:0,carregando:false,erro:null};
+async function salBuscarDRE(forcar){
+  if(SALDRE.carregando||(!forcar&&Date.now()-SALDRE.buscado<60000)) return;
+  if(typeof nuvem!=='function'||typeof chaveNuvem!=='function'||!chaveNuvem()) return;
+  SALDRE.carregando=true;
+  try{ const r=await nuvem('g_dre',{p_chave:chaveNuvem()}); const ant=JSON.stringify(SALDRE.meses);
+    SALDRE.meses=r&&r.meses&&Object.keys(r.meses).length?r.meses:null; SALDRE.atualizado=r&&r.atualizado||null; SALDRE.erro=null;
+    SALDRE.buscado=Date.now(); SALDRE.carregando=false; if(JSON.stringify(SALDRE.meses)!==ant) renderSalario(); }
+  catch(e){ SALDRE.erro=String(e.message||e); SALDRE.buscado=Date.now(); SALDRE.carregando=false; }
+}
+setInterval(()=>{ const pg=document.getElementById('pag-salario'); if(pg&&pg.offsetParent!==null) salBuscarDRE(); },60000);
+window.addEventListener('focus',()=>salBuscarDRE());
+// itens de um mês do DRE ({n,s,t,v}) -> as linhas do DRE do painel
+function salDreConverter(itens,M){
+  const o={real:M<salHojeYM()}, soma=(k,v)=>{ o[k]=(o[k]||0)+v; };
+  (itens||[]).forEach(it=>{ const v=Number(it.v); if(it.v==null||!isFinite(v)) return; const n=String(it.n||'');
+    if(it.t==='e') soma('nota',v);
+    else if(it.t==='i'){ if(/imposto/i.test(n)) soma('imposto',v); else if(/loja/i.test(n)) soma('loja',v); else if(/cons[oó]rcio/i.test(n)) soma('consorcios',v); else soma('mezo',v); }
+    else if(it.s==='time') soma('time',v);
+    else if(it.s==='nubank') soma('nubank',v);
+    else if(it.s==='bruna') soma('bruna',v);
+    else soma('contas',v);
+  });
+  return o;
+}
+function salHojeYM(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+function salDreMeses(){
+  if(!SALDRE.meses) return SAL().dre.meses||{};
+  const h=salHojeYM(), de=ymSoma(h,-2), ate=ymSoma(h,1), o={};
+  const copia=SAL().dre.meses||{};
+  Object.keys(SALDRE.meses).filter(M=>M>=de&&M<=ate).forEach(M=>{ const d=salDreConverter(SALDRE.meses[M],M);
+    // mês fechado sem a nota no DRE: usa a nota da cópia antiga
+    if(d.nota==null&&d.real&&copia[M]&&copia[M].nota!=null) d.nota=copia[M].nota;
+    o[M]=d; });
+  return o;
+}
 function salDRE(){
   const s=SAL(), ult=salUltimo(); if(!ult) return null;
-  const meses=Object.keys(s.dre.meses||{}).sort(), proj=salProjecao(ymSoma(ult.ref,1),3);
+  const fonte=salDreMeses(), meses=Object.keys(fonte).sort(), proj=salProjecao(ymSoma(ult.ref,1),3);
   const cols=meses.map(M=>{
-    const d=s.dre.meses[M], ref=ymSoma(M,1), rel=s.relatorios.find(r=>r.ref===ref), p=proj.find(x=>x.ym===ref);
+    const d=fonte[M], ref=ymSoma(M,1), rel=s.relatorios.find(r=>r.ref===ref), p=proj.find(x=>x.ym===ref);
     let nota,imposto,time,loja,real=!!d.real;
     if(rel){ nota=rel.bruto; imposto=d.imposto!=null?d.imposto:rel.imposto; time=d.time!=null?d.time+(d.aurora||0):rel.repasses; loja=d.loja!=null?d.loja:rel.custos; }
     else if(d.nota!=null){ nota=d.nota; imposto=d.imposto||0; time=(d.time||0)+(d.aurora||0); loja=d.loja||0; }
@@ -244,8 +281,10 @@ function salDRE(){
 }
 
 /* ---------- tela ---------- */
+function salQuando(iso){ if(!iso) return ''; const d=new Date(iso); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
 function renderSalario(){
   const el=$('pag-salario'); if(!el) return;
+  salBuscarDRE();
   const s=SAL(), ult=salUltimo();
   const topoImport=`<input type="file" id="salArq" accept=".xlsx,.xls" style="display:none" onchange="salArquivo(this)">`;
   if(!ult){
@@ -282,7 +321,7 @@ function renderSalario(){
       ${lin('Mezo','mezo',true)}
       ${lin('Sobrou no mês','sobra',false,'total')}
     </tbody></table></div>
-    <div class="legenda">Set e out vêm do teu DRE. Nos meses estimados, a nota é a estimativa daqui e as saídas são só o que já tá comprometido (contas fixas, parcelas dos cartões e consórcios); compra à vista que ainda vai acontecer não entra. ${s.dre.atualizado?'DRE puxado em '+dataBR(s.dre.atualizado)+'.':''}</div>`;
+    <div class="legenda">${SALDRE.meses?'Ligado no teu DRE: mexeu lá, muda aqui. Última mudança '+salQuando(SALDRE.atualizado)+'.':'Meses fechados vêm do teu DRE'+(s.dre.atualizado?' (cópia de '+dataBR(s.dre.atualizado)+')':'')+'.'} Mês sem a nota lançada no DRE usa a estimativa daqui, e as saídas dos meses que vêm são só o que já tá comprometido (contas fixas, parcelas dos cartões e consórcios).</div>`;
   }
   // gráfico
   h+=`<div class="titulo">Próximas notas <span>o que fica contigo</span></div><div class="bloco"><div class="dgraf" id="salGraf"></div>
