@@ -90,7 +90,9 @@ function salLerLinhas(linhas,titulo){
 /* junta o relatório na carteira; antes guarda o que a estimativa dizia pra aquele mês */
 function salImportar(lido,ref,arquivo){
   const s=SAL();
-  const estimado=s.relatorios.length?salProjecao(ref,1)[0]:null;
+  const ultAntes=salUltimo();
+  // estimativa só faz sentido pra nota nova; nota antiga carregada depois fica sem
+  const estimado=ultAntes&&ref>ultAntes.ref?salProjecao(ref,1)[0]:null;
   let rep=0, time=0;
   const marca=arquivo+'@'+ref;
   lido.linhas.forEach(L=>{
@@ -174,26 +176,49 @@ function salCarregarXLSX(){
   return new Promise((ok,erro)=>{ const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
     sc.onload=()=>ok(window.XLSX); sc.onerror=()=>erro(new Error('Não consegui abrir o leitor de planilha. Confere a internet.')); document.head.appendChild(sc); });
 }
+/* lê um arquivo e devolve {lido,ref,nome}; ref = mês do pagamento */
+async function salLerArquivo(f){
+  const X=await salCarregarXLSX(), wb=X.read(await f.arrayBuffer(),{type:'array',cellDates:false});
+  let linhas=null, titulo='';
+  wb.SheetNames.forEach(n=>{ const ws=wb.Sheets[n], aoa=X.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
+    if(!titulo) titulo=aoa.slice(0,4).map(r=>(r||[]).filter(Boolean).join(' ')).join(' ');
+    const hi=aoa.findIndex(r=>(r||[]).includes('Status')&&(r||[]).includes('Valor bruto'));
+    if(hi>=0&&!linhas){ const h=aoa[hi]; linhas=aoa.slice(hi+1).map(r=>Object.fromEntries(h.map((c,i)=>[c==null?'_'+i:String(c).trim(),r[i]]))); }
+  });
+  if(!linhas) return null;
+  const lido=salLerLinhas(linhas,titulo);
+  // a última venda nova do relatório é do mês da nota (o corte varia de 14 a 17), então paga no mês seguinte
+  let ref=lido.ref; if(!ref&&lido.ultimaVenda) ref=ymSoma(lido.ultimaVenda.slice(0,7),1);
+  return {lido,ref,nome:f.name};
+}
 async function salArquivo(inp){
-  const f=inp.files&&inp.files[0]; inp.value=''; if(!f) return;
+  const fs=[...(inp.files||[])]; inp.value=''; if(!fs.length) return;
   try{
-    const X=await salCarregarXLSX(), wb=X.read(await f.arrayBuffer(),{type:'array',cellDates:false});
-    let linhas=null, titulo='';
-    wb.SheetNames.forEach(n=>{ const ws=wb.Sheets[n], aoa=X.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
-      if(!titulo) titulo=aoa.slice(0,4).map(r=>(r||[]).filter(Boolean).join(' ')).join(' ');
-      const hi=aoa.findIndex(r=>(r||[]).includes('Status')&&(r||[]).includes('Valor bruto'));
-      if(hi>=0&&!linhas){ const h=aoa[hi]; linhas=aoa.slice(hi+1).map(r=>Object.fromEntries(h.map((c,i)=>[c==null?'_'+i:String(c).trim(),r[i]]))); }
-    });
-    if(!linhas) return alert('Não achei as colunas do relatório de comissão nesse arquivo (Status, Valor bruto…).');
-    const lido=salLerLinhas(linhas,titulo);
-    let ref=lido.ref; if(!ref&&lido.ultimaVenda) ref=salMesPagamento(lido.ultimaVenda);
+    if(fs.length>1) return salArquivos(fs);
+    const a=await salLerArquivo(fs[0]); if(!a) return alert('Não achei as colunas do relatório de comissão nesse arquivo (Status, Valor bruto…).');
+    const {lido}=a; let ref=a.ref;
     let nota=prompt('Essa nota é de qual mês? (ano-mês, ex: 2026-10 pra nota de outubro, que cai no começo de novembro)',ref?notaDe(ref):notaDe(ymHoje()));
     if(!nota||!/^\d{4}-\d{2}$/.test(nota.trim())) return; ref=ymSoma(nota.trim(),1);
     if(SAL().relatorios.some(r=>r.ref===ref)&&!confirm('Já tem a nota de '+ymRot(notaDe(ref),true)+'. Substituir?')) return;
     if(!lido.analitico&&!confirm('Esse é o relatório sem os repasses. Vou usar os repasses que eu já conheço de cada contrato (Prévia, Anjo, Robert). Venda nova de Prévia ou indicação nova pode sair errada. Se tiver o analítico da loja, ele é melhor. Seguir assim?')) return;
-    const r=salImportar(lido,ref,f.name); salvar(); renderSalario();
+    const r=salImportar(lido,ref,fs[0].name); salvar(); renderSalario();
     alert('Nota de '+ymRot(notaDe(ref),true)+' carregada.\nNota: '+salRs(r.bruto)+'\nFicou contigo: '+salRs(r.meu)+(r.estimado!=null?'\nA estimativa dizia: '+salRs(r.estimado):''));
   }catch(e){ alert('Não consegui ler esse arquivo: '+(e.message||e)); }
+}
+/* vários relatórios de uma vez (histórico): cada um vai pro mês certo, do mais antigo pro mais novo */
+async function salArquivos(fs){
+  const lidos=[], ruins=[];
+  for(const f of fs){ const a=await salLerArquivo(f); if(a&&a.ref) lidos.push(a); else ruins.push(f.name); }
+  const tem=new Set(SAL().relatorios.map(r=>r.ref)), porRef={};
+  lidos.forEach(a=>{ const b=porRef[a.ref]; if(!b||(a.lido.analitico&&!b.lido.analitico)) porRef[a.ref]=a; }); // mesmo mês 2x: fica o analítico
+  const novos=Object.values(porRef).filter(a=>!tem.has(a.ref)).sort((a,b)=>a.ref.localeCompare(b.ref));
+  const pulados=Object.values(porRef).filter(a=>tem.has(a.ref));
+  if(!novos.length) return alert('Essas notas já tão no painel'+(ruins.length?' (e não consegui ler: '+ruins.join(', ')+')':'')+'.');
+  const lista=novos.map(a=>ymRot(notaDe(a.ref))+' ('+salRs0(a.lido.bruto)+')').join(', ');
+  if(!confirm('Vou carregar as notas de '+lista+'.'+(pulados.length?' A de '+pulados.map(a=>ymRot(notaDe(a.ref))).join(', ')+' já tá aqui e fica como está.':'')+(ruins.length?' Não consegui ler: '+ruins.join(', ')+'.':'')+' Seguir?')) return;
+  novos.forEach(a=>salImportar(a.lido,a.ref,a.nome));
+  salvar(); renderSalario();
+  alert(novos.length+' notas carregadas.');
 }
 const salRs=v=>(v<0?'−':'')+'R$ '+Math.abs(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const salRs0=v=>(v<0?'−':'')+'R$ '+milhar(Math.round(Math.abs(v||0)));
@@ -286,7 +311,7 @@ function renderSalario(){
   const el=$('pag-salario'); if(!el) return;
   salBuscarDRE();
   const s=SAL(), ult=salUltimo();
-  const topoImport=`<input type="file" id="salArq" accept=".xlsx,.xls" style="display:none" onchange="salArquivo(this)">`;
+  const topoImport=`<input type="file" id="salArq" accept=".xlsx,.xls" multiple style="display:none" onchange="salArquivo(this)">`;
   if(!ult){
     el.innerHTML=`${topoImport}<div class="callout"><div class="etq">Salário e comissões · só o que é teu</div>
       <div style="font-size:24px;font-weight:700;margin-top:6px">Carrega o teu relatório de comissão</div>
@@ -390,7 +415,7 @@ function renderSalario(){
       <td class="fal">${r.estimado!=null?salRs(r.estimado):'–'}</td><td>${r.estimado!=null?`<span class="pc" style="color:${r.meu>=r.estimado?C.ok:C.vermelho}">${r.meu>=r.estimado?'+':'−'}${salRs(Math.abs(r.meu-r.estimado)).replace('−','')}</span>`:'<span class="fal">–</span>'}</td></tr>`).join('')}
     </tbody></table></div>
     <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap"><button class="btn forte" onclick="$('salArq').click()">Carregar nota do mês</button>
-      <span class="legenda" style="margin:0">Todo mês, quando sair o relatório, carrega aqui (de preferência o analítico da loja). A carteira se atualiza e tu vê o quanto a estimativa errou.</span></div>`;
+      <span class="legenda" style="margin:0">Todo mês, quando sair o relatório, carrega aqui (de preferência o analítico da loja). Dá pra escolher vários arquivos de uma vez pra montar o histórico. A carteira se atualiza e tu vê o quanto a estimativa errou.</span></div>`;
   // ajustes
   const ymA=ymHoje(), ymB=ymSoma(ymA,1);
   h+=`<div class="titulo">Ajustes</div><div class="dois">
